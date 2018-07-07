@@ -1,0 +1,19 @@
+{
+  "name": "urss-telemetry-server-sdk",
+  "version": "1.0.0",
+  "description": "The server for the URSS telemetry system. Scans all USB ports for devices, and aggregates serial data into a single stream.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/URSolarSplash/Telemetry-Server-SDK.git"
+  },
+  "author": "Chris Dalke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/URSolarSplash/Telemetry-Server-SDK/issues"
+  },
+  "homepage": "https://github.com/URSolarSplash/Telemetry-Server-SDK#readme"
+}
