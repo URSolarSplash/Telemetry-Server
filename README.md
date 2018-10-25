@@ -2,7 +2,15 @@
 ## Summary
 The Rochester Solar Splash team has a need to collect extensive telemetry from sensors around our boat. Previously, we lacked a single system which could collect and log all the data from the boat in a single place for analysis.
 
-The Telemetry SDK is our effort to consolidate telemetry into a single system which is easy to use: The hardware is simple to setup, can be programmed with a minimal amount of code, and the network is expandable.
+The Telemetry Server is our effort to consolidate telemetry into a single system which is easy to use: The hardware is simple to setup, can be programmed with a minimal amount of code, and the network is expandable.
+
+The Telemetry Server is a command-line application which runs in the background and handles the following tasks:
+- Scanning of USB ports on the device for input sources
+- Collection of telemetry data
+- Parsing of data points and storage into a database
+- API for retrieving data points or sets of data from another program (Telemetry UI)
+- API for data over a radio transmitter
+- Support for "proxy mode"; builts a database mirror of a remove computer and downloads data over radio
 
 ## Terminology
 - *Telemetry Node* - Devices which collect data and use the Telemetry Client SDK to communicate over the network. Devices can read & write data points. Currently, the Client SDK is designed for Arduino boards.
@@ -24,16 +32,5 @@ The server runs in a background thread. Once started, it will:
 - Periodically save data points to a file.
 - If a network is connected, upload the data points to a remote server.
 
-## SDK Interface
-### Java
-- `TelemetryServer.start()` - Initializes and starts the telemetry server.
-- `TelemetryServer.stop()` - Stops the telemetry server.
-
-
-### Python
-
-
-### JavaScript (Node)
-
-
 ## How to Use
+The telemetry
