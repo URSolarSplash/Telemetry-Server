@@ -1,13 +1,10 @@
 import serial
 from RepeatedTimer import RepeatedTimer
-from DataPoint import DataPoint
 from time import sleep
 from threading import Event
 import serial.tools.list_ports
 
 currentDevices = []
-
-testDataPoint = DataPoint("test")
 
 def checkDeviceName(deviceId):
     if deviceId.startswith("/dev/cu.usb"):
