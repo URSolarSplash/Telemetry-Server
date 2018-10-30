@@ -20,10 +20,12 @@ class RadioManager():
         except (serial.SerialException):
             self.mode = 0
             print("[Radio Manager] No detected serial telemetry device.")
-    def write(self):
+    def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream
-        # For now, does nothing
-        return
+        dataString= "{0}:{1}\n".format(dataName,dataValue)
+        #print("[Radio] writing data update string "+dataString)
+        if self.mode == 1:
+            self.serialPortWrite.write(dataString)
     def shutdown(self):
         try:
             self.serialPortWrite.close()

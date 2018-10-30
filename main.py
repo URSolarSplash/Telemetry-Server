@@ -30,6 +30,11 @@ database.resetTimestamp()
 serial = SerialManager(data)
 radio = RadioManager()
 
+# Set up the radio mirroring
+# This uses the radio system to emit events when data is updated
+# Used for remote data collection etc...
+data.setRadioMirror(radio)
+
 try:
     while True:
         # Update the device list and connect to new devices
@@ -44,8 +49,6 @@ try:
         if data.hasValidData():
             database.saveData()
 
-        # Sleep for an interval
-        sleep(0.1)
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")
 

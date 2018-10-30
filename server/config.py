@@ -36,7 +36,13 @@ dataKeys = [
 '''
 
 # Keys in the SQLite table
-dataKeys = ["test1","test2","test3"]
+dataKeys = [
+    "bmvTimeRemaining",
+    "bmvConsumedAh",
+    "bmvShuntVoltage",
+    "bmvShuntCurrent",
+    "bmvStateOfCharge"
+]
 
 # Blacklist for serial ports
 portBlacklist = [
@@ -49,8 +55,14 @@ portBlacklist = [
 dbFolder = "~/SOLAR_SPLASH/telemetry/"
 dbFile = "test1.db"
 
-# Frequency at which devices are polled
-pollRate = 0.25
+# Interval at which devices are polled
+pollRate = 0.1
+
+# Interval at which devices are scanned
+scanRate = 1
+
+# Interval at which data is saved to database
+saveRate = 1
 
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5

@@ -15,7 +15,7 @@ class SerialDevice:
         self.baudRate = None
         self.buffer = None
         self.mode = None
-        self.lastPolled = time()
+        self.lastPolled = time.time()
     def needsPoll(self):
         return time() - self.lastPolled > config.pollRate
 
@@ -24,6 +24,8 @@ class SerialManager:
         self.cache = cache
         self.devices = []
         self.deviceBlacklist = config.portBlacklist
+        self.lastScan = time.time()
+        self.lastPoll = time.time()
 
     def shutdown(self):
         for device in self.devices:
@@ -31,7 +33,17 @@ class SerialManager:
         print("[Serial Manager] shutdown complete.")
 
     def updateDevices(self):
-        portList = list(serial.tools.list_ports.comports())
+        if time.time() - self.lastScan < config.scanRate:
+            return
+        else:
+            self.lastScan = time.time()
+
+        #print("[Serial Manager] Scanning devices...")
+        try:
+            portList = list(serial.tools.list_ports.comports())
+        except:
+            print("[Serial Manager] Race condition during port scan. Skipping scan...")
+            return
         # Scan through the entire list of serial ports looking for devices
         portNames = []
         for port in portList:
@@ -66,16 +78,16 @@ class SerialManager:
                 # USB Radio Telemetry
                 print("[Serial Manager] Detected Device Type: USB Radio Telemetry")
                 # Attempt to open a connection
-                deviceInstance = RadioDevice(portId)
+                deviceInstance = RadioDevice(self.cache,portId)
             elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
                 print("[Serial Manager] Detected Device Type: U-Blox GPS")
-                deviceInstance = UsbGpsDevice(portId)
+                deviceInstance = UsbGpsDevice(self.cache,portId)
             elif portDescription.startswith("VE Direct"):
                 print("[Serial Manager] Detected Device Type: VE Direct")
-                deviceInstance = VictronDevice(portId)
+                deviceInstance = VictronDevice(self.cache,portId)
             else:
                 print("[Serial Manager] Detected Device Type: Default Telemetry")
-                deviceInstance = TelemetryDevice(portId)
+                deviceInstance = TelemetryDevice(self.cache,portId)
 
             # Add newly opened device to the list
             self.devices.append(deviceInstance)
@@ -89,8 +101,13 @@ class SerialManager:
                 self.devices.remove(device)
 
     def pollDevices(self):
-        print("[Serial Manager] Polling devices...")
+        if time.time() - self.lastPoll < config.pollRate:
+            return
+        else:
+            self.lastPoll = time.time()
+
+        #print("[Serial Manager] Polling devices...")
         # Get data from our active device list
         for device in self.devices:
-            print("[Serial Manager] - polling "+device.portName)
+            #print("[Serial Manager] - polling "+device.portName)
             device.update()

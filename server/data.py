@@ -29,15 +29,21 @@ class DataCache:
         # Create a dictionary of all data points with ID as a key
         self.values = {}
         self.keyList = sorted(keyList)
+        self.radioMirror = None
 
         # Create blank data points based on key list
         for key in self.keyList:
             self.values[key] = DataPoint()
+    def setRadioMirror(self, instance):
+        self.radioMirror = instance
     def set(self, name, value):
         # Set a data point if it exists
         # If it doesn't exist, raise an error
         if name in self.values:
             self.values[name].set(value)
+            if self.radioMirror:
+                # If we're hooked up to radio transmitter, send data update packet
+                self.radioMirror.write(name, value)
         else:
             print("[Tried to set invalid key [{0}]]".format(name))
     def get(self, name):
@@ -68,6 +74,7 @@ class Database:
         self.filename = filename
         self.overwriteOnStart = overwrite
         self.timestampOffset = 0
+        self.lastSave = time()
         # Create the database object. Will create file if not exists
         self.db = sqlite3.connect(self.filename)
         self.setSchema()
@@ -79,6 +86,11 @@ class Database:
         self.db.close()
 
     def saveData(self):
+        if time() - self.lastSave < config.saveRate:
+            return
+        else:
+            self.lastSave = time()
+
         # Saves a row of data into the database.
         cursor = self.db.cursor()
         fields = ""
