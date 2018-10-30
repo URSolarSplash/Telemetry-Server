@@ -6,12 +6,19 @@ from server import config
 from time import sleep
 from threading import Event
 import signal
+import os
+from os.path import expanduser
+
+# Create base database folder if it doesnt exists
+config.dbFolder = expanduser(config.dbFolder)
+if not os.path.exists(config.dbFolder):
+    os.makedirs(config.dbFolder)
 
 # Create a data cache and Database
 # Data cache handles storage of values and their expirations
 # Database connects the data cache to a sqlite file
 data = DataCache(config.dataKeys)
-database = Database(data,"./data/test1.db",True)
+database = Database(data,config.dbFolder + config.dbFile,True)
 
 # Set timestamp to start at 0 at program start
 # If you don't call this, the timestamp is since epoch
@@ -38,7 +45,7 @@ try:
             database.saveData()
 
         # Sleep for an interval
-        sleep(1)
+        sleep(0.1)
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")
 

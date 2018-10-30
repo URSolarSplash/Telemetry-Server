@@ -6,6 +6,7 @@ import atexit
 import platform
 import re
 import config
+from devices import *
 
 class SerialDevice:
     def __init__(self, id, baud):
@@ -26,19 +27,20 @@ class SerialManager:
 
     def shutdown(self):
         for device in self.devices:
-            print("[Serial Manager] disconnecting from device "+device.portName+"...")
-            device.portInstance.close()
+            device.close()
         print("[Serial Manager] shutdown complete.")
 
     def updateDevices(self):
         portList = list(serial.tools.list_ports.comports())
         # Scan through the entire list of serial ports looking for devices
+        portNames = []
         for port in portList:
+            portNames.append(port[0])
             portAlreadyOpen = False
             portId = port[0]
             portDescription = port[1]
             for device in self.devices:
-    			if (device.portName.port == port[0]):
+    			if (device.portName == port[0]):
     				#Port already exists
     				portAlreadyOpen = True
             if portAlreadyOpen:
@@ -55,19 +57,40 @@ class SerialManager:
             # - Victron BMV device
             # - USB GPS
             # - Telemetry Protocol device
+            # - Radio serial
             # We will use the USB-Serial description field to determine this.
             # If the description matches a known hardware device, we use the custom
             # protocol, otherwise we use the standard telemetry protocol.
+            deviceInstance = None
             if portDescription.startswith("FT231X"):
                 # USB Radio Telemetry
-                print("USB Radio Telemetry")
+                print("[Serial Manager] Detected Device Type: USB Radio Telemetry")
+                # Attempt to open a connection
+                deviceInstance = RadioDevice(portId)
             elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
-                print("U-Blox GPS")
+                print("[Serial Manager] Detected Device Type: U-Blox GPS")
+                deviceInstance = UsbGpsDevice(portId)
             elif portDescription.startswith("VE Direct"):
-                print("VE Direct")
+                print("[Serial Manager] Detected Device Type: VE Direct")
+                deviceInstance = VictronDevice(portId)
             else:
-                print("Default Telemetry")
+                print("[Serial Manager] Detected Device Type: Default Telemetry")
+                deviceInstance = TelemetryDevice(portId)
 
+            # Add newly opened device to the list
+            self.devices.append(deviceInstance)
+
+        # Remove serial devices that have been closed
+        # This is identified based on if the serial device is closed
+        # or if the device did not show up on the serial scan
+        for device in self.devices:
+            if not (device.isOpen() and (device.portName in portNames)):
+                device.close()
+                self.devices.remove(device)
 
     def pollDevices(self):
-        return
+        print("[Serial Manager] Polling devices...")
+        # Get data from our active device list
+        for device in self.devices:
+            print("[Serial Manager] - polling "+device.portName)
+            device.update()

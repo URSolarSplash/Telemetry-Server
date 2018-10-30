@@ -44,6 +44,11 @@ portBlacklist = [
     "/dev/ttyAMA0"
 ]
 
+# Database path
+# Folder must
+dbFolder = "~/SOLAR_SPLASH/telemetry/"
+dbFile = "test1.db"
+
 # Frequency at which devices are polled
 pollRate = 0.25
 
