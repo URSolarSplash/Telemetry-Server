@@ -34,6 +34,18 @@ dataKeys = [
     "bmvStateOfCharge"
 ]
 '''
+
+# Keys in the SQLite table
 dataKeys = ["test1","test2","test3"]
 
+# Blacklist for serial ports
+portBlacklist = [
+    "/dev/cu.Bluetooth-Incoming-Port",
+    "/dev/ttyAMA0"
+]
+
+# Frequency at which devices are polled
+pollRate = 0.25
+
+# Number of seconds until a data point is invalidated
 dataTimeOut = 5

@@ -8,21 +8,9 @@ import atexit
 import platform
 import re
 
-serialPortWrite = serial.Serial(
-	port='/dev/serial0',
-	baudrate=57600,
-	parity=serial.PARITY_NONE,
-	stopbits=serial.STOPBITS_ONE,
-	bytesize=serial.EIGHTBITS
-)
-
-print "Starting serial port scanner..."
-
 serialPorts = []
 serialPortBuffers = []
 serialPortModes = []
-victronBuffer = ""
-victronCommands = ["PID","V","VS","I","P","SOC","TTG","Alarm","Relay"]
 
 #Status indicator variables
 serialPortsWantsStatus = []
@@ -32,20 +20,11 @@ statusRPM = 0
 statusStateOfCharge = 0
 statusTargetCurrent = 10
 hasStatusData = False
-statusRe = re.compile("BATTERY,PID \S*,V (-?\d*),VS (-?\d*),I (-?\d*),P (-?\d*),SOC (-?\d*),TTG (-?\d*),.*")
 
 #Parses a data message for data we are interested in.
 def parseForData(inString):
 	global hasStatusData, statusRe, statusVoltage, statusCurrent, statusStateOfCharge, statusRPM
-	m = statusRe.match(inString)
-	if (m):
-		statusVoltage = int(m.group(1))/1000.0
-		statusCurrent = int(m.group(3))/1000.0
-		statusStateOfCharge = int(m.group(5))/1000.0
-		hasStatusData = True
-	if inString.startswith("RPM="):
-		statusRPM = int(inString[4:])
-		hasStatusData = True
+	
 
 def updateSerialPorts():
 	#Scan for new serial ports that haven't been added already
@@ -93,28 +72,6 @@ def updateSerialPorts():
 			del serialPortsWantsStatus[serialPorts.index(serialPort)]
 			serialPorts.remove(serialPort)
 
-def doAtExit():
-	#Close any open serial ports
-	for serialPort in serialPorts:
-		print("Closed connection on port "+serialPort.port+".")
-		serialPort.close()
-	print("Program shutdown.")
-
-atexit.register(doAtExit);
-
-def handleLine(port,line,index):
-	rawString = str(line).rstrip()
-	if rawString.startswith("URSS"):
-		rawString = rawString[4:]
-		parseForData(rawString)
-		serialString = "{ \"port\": \""+port.port+"\", \"message\": \""+rawString+"\" }"
-		print(serialString)
-		serialPortWrite.write(serialString+"\n")
-		serialPortWrite.flush()
-		if (rawString == "REQUEST_STATUS"):
-			print("Flagged serial port \""+port.port+"\" as data monitoring device!\n")
-			serialPortsWantsStatus[index] = 1
-			serialPorts[serialIndex].write("Connected!      Waiting for data.\n")
 
 while 1:
 	updateSerialPorts()
@@ -154,14 +111,3 @@ while 1:
 			serialPort.close()
 			print("Connection error during port read on port "+serialPort.port+". port closed.")
 	time.sleep(0.1)
-	#Send status data if we have anything new
-	if hasStatusData == True:
-		#print("Sending new status data...\n")
-		for serialPort in serialPorts:
-			#print("Sending new status to port "+serialPort.port+"\n")
-			serialIndex = serialPorts.index(serialPort)
-			if (serialPortsWantsStatus[serialIndex] == 1):
-				statusStringLine1 = "{:<16}".format("{:.2f}v / {:.2f}A".format(statusVoltage,statusCurrent))
-				statusStringLine2 = "{:<16}".format("{:.0%} RPM: {:}".format(statusStateOfCharge,statusRPM))
-				serialPort.write(statusStringLine1+statusStringLine2+"\n")
-		hasStatusData = False

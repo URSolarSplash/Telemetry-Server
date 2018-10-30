@@ -1,5 +1,6 @@
 from time import time
 import config
+import sqlite3
 
 # Stores a single data point, which is a value that expires if it's too old.
 # - get(): gets the value, or None if value is >timeout seconds old.
@@ -53,9 +54,66 @@ class DataCache:
         for key in self.values.keys():
             if not self.values[key].isExpired():
                 return True
-        return false
+        return False
     def __repr__(self):
         representation = "[DataCache Instance with {0} values]:\n".format(len(self.values.keys()))
         for key in self.values.keys():
             representation += " -[Key: {0}, DataPoint: {1}]\n".format(key,str(self.values[key]))
         return representation
+
+# Responsible for storage of the data cache to the sqlite database
+class Database:
+    def __init__(self,cache, filename, overwrite):
+        self.cache = cache
+        self.filename = filename
+        self.overwriteOnStart = overwrite
+        self.timestampOffset = 0
+        # Create the database object. Will create file if not exists
+        self.db = sqlite3.connect(self.filename)
+        self.setSchema()
+
+    def resetTimestamp(self):
+        self.timestampOffset = time()
+
+    def shutdown(self):
+        self.db.close()
+
+    def saveData(self):
+        # Saves a row of data into the database.
+        cursor = self.db.cursor()
+        fields = ""
+        valuePlaceholders = ""
+        valueList = []
+        for i, key in enumerate(self.cache.getKeys()):
+            fields += "," + key
+            valuePlaceholders += ",?"
+            valueList.append(self.cache.get(key))
+        #print("fields:"+fields)
+        #print("value placeholder:"+valuePlaceholders)
+        #print("values:"+str(valueList))
+        timestamp = time() - self.timestampOffset
+        valueList.insert(0, timestamp)
+        print("[Saving database row with timestamp {0}]".format(timestamp))
+        cursor.execute("insert into data(timestamp"+fields+") values (?"+valuePlaceholders+")",valueList)
+        self.db.commit()
+
+    def clearData(self):
+        # Removes all data
+        cursor = self.db.cursor()
+        cursor.execute("delete from data;")
+        self.db.commit()
+
+    def setSchema(self):
+        cursor = self.db.cursor()
+        if self.overwriteOnStart:
+            print("Overwriting database table...")
+            cursor.execute("drop table if exists data;")
+            self.db.commit()
+        createTableCommand = '''create table if not exists '''
+        tableFields = '''id INTEGER PRIMARY KEY, timestamp NUMERIC'''
+        for key in sorted(self.cache.getKeys()):
+            tableFields += ", {0} NUMERIC".format(key)
+        print("Creating database schema:")
+        print(createTableCommand + "data("+tableFields+")")
+        cursor.execute(createTableCommand + "data("+tableFields+")")
+        self.db.commit()

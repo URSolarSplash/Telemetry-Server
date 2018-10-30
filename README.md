@@ -22,7 +22,7 @@ The Telemetry Server is a command-line application which runs in the background 
 
 The telemetry system consists of a single Telemetry Server, connected to multiple Telemetry Nodes.
 
-This repository contains the SDK which handles all functionality for the Telemetry Server. The Server SDK has been created in multiple languages: Java, Python, and JS are supported.
+This repository contains the SDK which handles all functionality for the Telemetry Server. The Server has been created in Python.
 
 The server runs in a background thread. Once started, it will:
 - Once per second, scan for new USB devices and attempt to connect to them.
@@ -33,4 +33,3 @@ The server runs in a background thread. Once started, it will:
 - If a network is connected, upload the data points to a remote server.
 
 ## How to Use
-The telemetry
