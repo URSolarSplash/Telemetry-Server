@@ -39,10 +39,11 @@ dataKeys = [
 dataKeys = [
     "bmvTimeRemaining",
     "bmvConsumedAh",
-    "bmvShuntVoltage",
-    "bmvShuntCurrent",
-    "bmvStateOfCharge",
-    "debug1"
+    "bmvVoltage",
+    "bmvAuxVoltage",
+    "bmvCurrent",
+    "bmvPower",
+    "bmvStateOfCharge"
 ]
 
 # Blacklist for serial ports
