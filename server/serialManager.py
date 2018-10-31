@@ -38,6 +38,9 @@ class SerialManager:
         else:
             self.lastScan = time.time()
 
+        # Update number of live devices
+        statistics.stats["numActiveDevices"] = len(self.devices)
+
         #print("[Serial Manager] Scanning devices...")
         try:
             portList = list(serial.tools.list_ports.comports())

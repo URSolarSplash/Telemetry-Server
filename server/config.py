@@ -41,7 +41,8 @@ dataKeys = [
     "bmvConsumedAh",
     "bmvShuntVoltage",
     "bmvShuntCurrent",
-    "bmvStateOfCharge"
+    "bmvStateOfCharge",
+    "debug1"
 ]
 
 # Blacklist for serial ports
@@ -66,3 +67,6 @@ saveRate = 1
 
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5
+
+# Port for the HTTP interface
+httpPort = 8080

@@ -1,0 +1,60 @@
+from flask import Flask, jsonify
+import smtplib
+import time
+import config
+import thread
+import json
+import logging
+import statistics
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+
+app = Flask(__name__)
+dataInstance = None
+@app.route('/live',methods=['GET'])
+def liveData():
+    jsonString = ""
+    jsonString += "{"
+    for i, key in enumerate(dataInstance.getKeys()):
+        if (i > 0):
+            jsonString += ",\n"
+        else:
+            jsonString +="\n"
+        jsonString += "  \"{0}\" : \"{1}\"".format(key,dataInstance.get(key))
+    jsonString += "\n}"
+    response = app.response_class(
+        response=jsonString,
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+@app.route('/stats',methods=['GET'])
+def liveStats():
+    jsonString = ""
+    jsonString += "{"
+    for i, key in enumerate(statistics.stats.keys()):
+        if (i > 0):
+            jsonString += ",\n"
+        else:
+            jsonString +="\n"
+        jsonString += "  \"{0}\" : \"{1}\"".format(key,statistics.stats[key])
+    jsonString += "\n}"
+    response = app.response_class(
+        response=jsonString,
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+
+def flaskThread():
+    app.run(host='0.0.0.0',threaded=True, use_reloader=False)
+
+class HTTPServerManager:
+    def __init__(self, cache):
+        print("[HTTP Server Manager] Starting server instance...")
+        global dataInstance
+        dataInstance = cache
+        thread.start_new_thread(flaskThread,())

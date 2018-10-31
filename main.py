@@ -2,6 +2,7 @@
 from server.data import *
 from server.serialManager import SerialManager
 from server.radio import RadioManager
+from server.api import HTTPServerManager
 from server import config
 from time import sleep
 from threading import Event
@@ -27,8 +28,10 @@ database.resetTimestamp()
 # Create manager classes for several functions:
 # - Serial manager is responsible for managing serial devices
 # - Radio manager is responsible for radio-based data transmission to shore
+# - HTTPServerManager creates a lightweight interface to get the latest data via GET request.
 serial = SerialManager(data)
 radio = RadioManager()
+server = HTTPServerManager(data)
 
 # Set up the radio mirroring
 # This uses the radio system to emit events when data is updated

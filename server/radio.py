@@ -1,4 +1,5 @@
 import serial
+from server import statistics
 
 # Handles radio communication of telemetry data
 # This handles output from the Pi to the shore computer
@@ -16,9 +17,11 @@ class RadioManager():
             	bytesize=serial.EIGHTBITS
             )
             self.mode = 1
+            statistics.stats["hasRadio"] =  True
             print("[Radio Manager] Detected serial telemetry device.")
         except (serial.SerialException):
             self.mode = 0
+            statistics.stats["hasRadio"] =  False
             print("[Radio Manager] No detected serial telemetry device.")
     def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream

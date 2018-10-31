@@ -1,6 +1,7 @@
 import re
 import serial
 import ast
+import statistics
 
 class GenericSerialDevice(object):
 	def __init__(self, cache, portName, baudRate):
@@ -27,9 +28,31 @@ class GenericSerialDevice(object):
 		# Gets new serial data if it is incoming
 		pass
 
+# For now uses protocol of key:value, will be replaced by Gut's telemetry protocol
 class TelemetryDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(TelemetryDevice, self).__init__(cache, portName, 115200)
+	def update(self):
+		if self.open:
+			try:
+				waitingBytes = self.port.in_waiting
+				if waitingBytes == 0:
+					return
+				for c in self.port.read(waitingBytes):
+					if c == b'\n':
+						rawLine = str(self.buffer).lstrip().rstrip().replace('\t',' ') # Replace tabs with spaces and strip whitespace
+						rawLine = re.sub('/\p{C}+/u','',rawLine) # Replace invisible characters
+						self.buffer=b'' # Reset the buffer
+						# Extract variable name and value
+						dataArray = rawLine.split(':',1)
+						dataName = dataArray[0]
+						dataValues = float(dataArray[1])
+						self.cache.set(dataName,dataValues)
+					else:
+						self.buffer += c
+			except Exception as e:
+				print(e)
+				self.close()
 
 class RadioDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
@@ -50,7 +73,8 @@ class RadioDevice(GenericSerialDevice):
 						dataName = dataArray[0]
 						dataValues = float(dataArray[1])
 						self.cache.set(dataName,dataValues)
-						print("[Radio] Received remote telemetry data {0}={1}".format(dataName,dataValues))
+						statistics.stats["numRadioPackets"] += 1
+						#print("[Radio] Received remote telemetry data {0}={1}".format(dataName,dataValues))
 					else:
 						self.buffer += c
 			except Exception as e:

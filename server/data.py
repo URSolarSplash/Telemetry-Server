@@ -1,6 +1,7 @@
 from time import time
 import config
 import sqlite3
+import statistics
 
 # Stores a single data point, which is a value that expires if it's too old.
 # - get(): gets the value, or None if value is >timeout seconds old.
@@ -41,6 +42,7 @@ class DataCache:
         # If it doesn't exist, raise an error
         if name in self.values:
             self.values[name].set(value)
+            statistics.stats["numDataPoints"] += 1
             if self.radioMirror:
                 # If we're hooked up to radio transmitter, send data update packet
                 self.radioMirror.write(name, value)
@@ -105,7 +107,7 @@ class Database:
         #print("values:"+str(valueList))
         timestamp = time() - self.timestampOffset
         valueList.insert(0, timestamp)
-        print("[Saving database row with timestamp {0}]".format(timestamp))
+        #print("[Saving database row with timestamp {0}]".format(timestamp))
         cursor.execute("insert into data(timestamp"+fields+") values (?"+valuePlaceholders+")",valueList)
         self.db.commit()
 
