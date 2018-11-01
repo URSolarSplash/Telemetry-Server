@@ -1,8 +1,18 @@
-'''
+# Keys in the SQLite table
 dataKeys = [
-    "motorTemp",
-    "motorRpm",
-    "propRpm",
+    "vescTemp",
+    "vescOutCurrent",
+    "vescInCurrent",
+    "vescDutyCycle",
+    "vescRpm",
+    "vescInVoltage",
+    "vescError",
+    "alltraxTemp",
+    "alltraxInVoltage",
+    "alltraxOutCurrent",
+    "alltraxInCurrent",
+    "alltraxDutyCycle",
+    "alltraxError",
     "batteryPackVoltage",
     "batteryCellVoltage0",
     "batteryCellVoltage1",
@@ -18,6 +28,16 @@ dataKeys = [
     "batteryBusTemp2",
     "batteryBusTemp3",
     "batteryBusTemp4",
+    "bmvTimeRemaining",
+    "bmvConsumedAh",
+    "bmvVoltage",
+    "bmvAuxVoltage",
+    "bmvCurrent",
+    "bmvPower",
+    "bmvStateOfCharge",
+    "motorRpm",
+    "propRpm",
+    "motorTemp",
     "gyroTrimAngle",
     "gyroRollAngle",
     "gyroYawAngle",
@@ -27,23 +47,7 @@ dataKeys = [
     "gpsLatitude",
     "gpsLongitude",
     "gpsNumSatellites",
-    "bmvTimeRemaining",
-    "bmvConsumedAh",
-    "bmvShuntVoltage",
-    "bmvShuntCurrent",
-    "bmvStateOfCharge"
-]
-'''
-
-# Keys in the SQLite table
-dataKeys = [
-    "bmvTimeRemaining",
-    "bmvConsumedAh",
-    "bmvVoltage",
-    "bmvAuxVoltage",
-    "bmvCurrent",
-    "bmvPower",
-    "bmvStateOfCharge"
+    "throttlePercentage"
 ]
 
 # Blacklist for serial ports

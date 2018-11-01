@@ -9,7 +9,6 @@ import statistics
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-
 app = Flask(__name__)
 dataInstance = None
 @app.route('/live',methods=['GET'])
@@ -21,7 +20,7 @@ def liveData():
             jsonString += ",\n"
         else:
             jsonString +="\n"
-        jsonString += "  \"{0}\" : \"{1}\"".format(key,dataInstance.get(key))
+        jsonString += "  \"{0}\" : {{\"current\" : \"{1}\", \"min\" : \"{2}\", \"max\" : \"{3}\"}}".format(key,dataInstance.get(key),dataInstance.getMin(key),dataInstance.getMax(key))
     jsonString += "\n}"
     response = app.response_class(
         response=jsonString,

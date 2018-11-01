@@ -10,12 +10,32 @@ class DataPoint:
     def __init__(self):
         self.lastUpdated = 0
         self.value = None
+        self.hasMin = False
+        self.hasMax = False
+        self.minValue = float("inf")
+        self.maxValue = float("-inf")
     def set(self, newValue):
         self.value = newValue
         self.lastUpdated = time()
+        if (self.value < self.minValue):
+            self.minValue = self.value
+            self.hasMin = True
+        if (self.value > self.maxValue):
+            self.maxValue = self.value
+            self.hasMax = True
     def get(self):
         if (not self.isExpired()):
             return self.value
+        else:
+            return None
+    def getMin(self):
+        if self.hasMin:
+            return self.minValue
+        else:
+            return None
+    def getMax(self):
+        if self.hasMax:
+            return self.maxValue
         else:
             return None
     def isExpired(self):
@@ -55,6 +75,20 @@ class DataCache:
             return self.values[name].get()
         else:
             print("[Tried to get invalid key [{0}]]".format(name))
+            return None
+    def getMin(self, name):
+        # Get a data point's min value if it exists
+        # If it doesn't exist, return a null value
+        if name in self.values:
+            return self.values[name].getMin()
+        else:
+            return None
+    def getMax(self, name):
+        # Get a data point's max value if it exists
+        # If it doesn't exist, return a null value
+        if name in self.values:
+            return self.values[name].getMax()
+        else:
             return None
     def getKeys(self):
         return self.values.keys()

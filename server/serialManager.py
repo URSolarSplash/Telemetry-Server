@@ -82,6 +82,8 @@ class SerialManager:
                 print("[Serial Manager] Detected Device Type: USB Radio Telemetry")
                 # Attempt to open a connection
                 deviceInstance = RadioDevice(self.cache,portId)
+                # Turn on radio flag in statistics
+                statistics.stats["hasRadio"] = True
             elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
                 print("[Serial Manager] Detected Device Type: U-Blox GPS")
                 deviceInstance = UsbGpsDevice(self.cache,portId)
@@ -102,6 +104,8 @@ class SerialManager:
             if not (device.isOpen() and (device.portName in portNames)):
                 device.close()
                 self.devices.remove(device)
+                if type(device) is RadioDevice:
+                    statistics.stats["hasRadio"] = False
 
     def pollDevices(self):
         if time.time() - self.lastPoll < config.pollRate:
