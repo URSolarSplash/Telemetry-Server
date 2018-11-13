@@ -47,8 +47,23 @@ dataKeys = [
     "gpsLatitude",
     "gpsLongitude",
     "gpsNumSatellites",
-    "throttlePercentage"
+    "throttlePercentage",
+    "windPercentHumidity",
+    "windTemperature",
+    "windSpeed",
+    "windAverageSpeed",
+    "windWarningState"
 ]
+
+# Defines thresholds for any values
+# Each item in the dict is a data key, mapped to an array
+# element 0 is the minimum, element 1 is maximum
+# alarm is TRUE if the data is out of this range
+alarmThresholds = {
+    'bmvVoltage' : [12,40],
+    'bmvCurrent' : [-10,100],
+    'bmvStateOfCharge' : [50,100]
+}
 
 # Blacklist for serial ports
 portBlacklist = [
@@ -62,7 +77,7 @@ dbFolder = "~/SOLAR_SPLASH/telemetry/"
 dbFile = "test1.db"
 
 # Interval at which devices are polled
-pollRate = 0.1
+pollRate = 0.01
 
 # Interval at which devices are scanned
 scanRate = 1

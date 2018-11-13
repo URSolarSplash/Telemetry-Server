@@ -52,6 +52,13 @@ class DataCache:
         self.keyList = sorted(keyList)
         self.radioMirror = None
 
+        # Create list of keys which have alarms
+        self.alarmedKeys = []
+        for key in self.keyList:
+            if key in config.alarmThresholds.keys():
+                self.alarmedKeys.append(key)
+        print("Alarmed keys: "+str(self.alarmedKeys))
+
         # Create blank data points based on key list
         for key in self.keyList:
             self.values[key] = DataPoint()
@@ -97,6 +104,28 @@ class DataCache:
             if not self.values[key].isExpired():
                 return True
         return False
+    # Checks if the key specified is in an alarm state
+    # To be in an alarm state, the following conditions must be matched:
+    # - Key is in cache
+    # - Key has defined alarm thresholds
+    # - Key is outside alarm thresholds
+    def checkAlarm(self, key):
+        if key not in self.alarmedKeys:
+            return False
+        value = self.get(key)
+        if value == None:
+            return False
+        if value < config.alarmThresholds[key][0]:
+            return True
+        if value > config.alarmThresholds[key][1]:
+            return True
+        return False
+    # Returns a dict of alarm statuses
+    def getAlarms(self):
+        alarmDict = {}
+        for key in self.alarmedKeys:
+            alarmDict[key] = self.checkAlarm(key)
+        return alarmDict
     def __repr__(self):
         representation = "[DataCache Instance with {0} values]:\n".format(len(self.values.keys()))
         for key in self.values.keys():

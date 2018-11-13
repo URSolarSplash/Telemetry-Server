@@ -49,8 +49,8 @@ try:
         serial.pollDevices()
 
         # If the data cache has valid data, save into the database
-        if data.hasValidData():
-            database.saveData()
+        #if data.hasValidData():
+        #    database.saveData()
 
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")

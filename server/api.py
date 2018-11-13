@@ -29,6 +29,25 @@ def liveData():
     )
     return response
 
+@app.route('/alarms',methods=['GET'])
+def liveAlarms():
+    jsonString = ""
+    jsonString += "{"
+    alarms = dataInstance.getAlarms()
+    for i, alarmKey in enumerate(alarms.keys()):
+        if (i > 0):
+            jsonString += ",\n"
+        else:
+            jsonString +="\n"
+        jsonString += "  \"{0}\" : {1}".format(alarmKey,"true" if alarms[alarmKey] else "false")
+    jsonString += "\n}"
+    response = app.response_class(
+        response=jsonString,
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
 @app.route('/stats',methods=['GET'])
 def liveStats():
     jsonString = ""
@@ -46,6 +65,8 @@ def liveStats():
         mimetype='application/json'
     )
     return response
+
+
 
 
 def flaskThread():
