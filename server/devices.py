@@ -61,6 +61,17 @@ class TelemetryDevice(GenericSerialDevice):
 				print(e)
 				self.close()
 
+#TelemetryNode implementing URSS telemetry protocol
+class TelemetryNode(GenericSerialDevice):
+	def __init__(self,cache,portName):
+		super(TelemetryNode,self).__init__(cache,portName,115200)
+	'''
+	def update(self):
+		if self.open:
+			try:
+	'''
+
+
 class RadioDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(RadioDevice, self).__init__(cache, portName, 57600)
