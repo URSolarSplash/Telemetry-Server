@@ -88,7 +88,7 @@ class NMEASentence(NMEASentenceBase):
 
     @staticmethod
     def parse(line, check=False):
-        print("Parsing NMEA line:"+line)
+        #print("Parsing NMEA line:"+line)
         '''
         parse(line)
 

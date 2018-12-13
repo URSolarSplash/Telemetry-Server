@@ -243,6 +243,7 @@ class Database:
             print("Overwriting database table(s)...")
             for table in self.sessionList:
                 cursor.execute("drop table if exists "+table+";")
+            cursor.execute("drop table if exists sessionMetadata;")
             self.db.commit()
             # Reset session id
             self.sessionId = 0

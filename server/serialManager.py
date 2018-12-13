@@ -6,7 +6,14 @@ import atexit
 import platform
 import re
 import config
-from devices import *
+from devices.TelemetryNodeDevice import *
+from devices.RadioDevice import *
+from devices.TelemetryNodeDevice import *
+from devices.TelemetryTextDevice import *
+from devices.UsbGpsDevice import *
+from devices.UsbWindSensorDevice import *
+from devices.VictronDevice import *
+import statistics
 
 class SerialDevice:
 	def __init__(self, id, baud):
@@ -99,8 +106,7 @@ class SerialManager:
 				deviceInstance = UsbWindSensorDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
-				# initiate handshake protocol
-				deviceInstance = TelemetryDevice(self.cache,portId)
+				deviceInstance = TelemetryNodeDevice(self.cache,portId)
 
 			# Add newly opened device to the list
 			self.devices.append(deviceInstance)
@@ -125,4 +131,5 @@ class SerialManager:
 		# Get data from our active device list
 		for device in self.devices:
 			#print("[Serial Manager] - polling "+device.portName)
-			device.update()
+			if (device.isOpen()):
+				 device.update()

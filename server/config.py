@@ -68,7 +68,8 @@ alarmThresholds = {
 # Blacklist for serial ports
 portBlacklist = [
     "/dev/cu.Bluetooth-Incoming-Port",
-    "/dev/ttyAMA0"
+    "/dev/ttyAMA0",
+    "/dev/cu.JBLCharge3-SPPDev-1"
 ]
 
 # Database path
@@ -80,13 +81,13 @@ dbFile = "test1.db"
 dbTablePrefix = "dataSession"
 
 # Whether to erase the database on start
-dbEraseOnStart = False
+dbEraseOnStart = True
 
 # Debug: Ignore all devices, don't connect to anything
-ignoreDevices = True
+ignoreDevices = False
 
 # Interval at which devices are polled
-pollRate = 0.01
+pollRate = 0
 
 # Interval at which devices are scanned
 scanRate = 1
@@ -98,4 +99,4 @@ saveRate = 1
 dataTimeOut = 5
 
 # Port for the HTTP interface
-httpPort = 8080
+httpPort = 8081
