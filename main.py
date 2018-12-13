@@ -19,7 +19,7 @@ if not os.path.exists(config.dbFolder):
 # Data cache handles storage of values and their expirations
 # Database connects the data cache to a sqlite file
 data = DataCache(config.dataKeys)
-database = Database(data,config.dbFolder + config.dbFile,True)
+database = Database(data,config.dbFolder + config.dbFile,config.dbEraseOnStart)
 
 # Set timestamp to start at 0 at program start
 # If you don't call this, the timestamp is since epoch
@@ -49,8 +49,8 @@ try:
         serial.pollDevices()
 
         # If the data cache has valid data, save into the database
-        #if data.hasValidData():
-        #    database.saveData()
+        if data.hasValidData():
+            database.saveData()
 
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")

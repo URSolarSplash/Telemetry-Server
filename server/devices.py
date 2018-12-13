@@ -198,37 +198,7 @@ class UsbGpsDevice(GenericSerialDevice):
 				self.close()
 
 # Decodes the Victron VE.Direct text-based protocol
-# Consists of lines with keys and values:
-# H1 - Depth of deepest discharge (mAh)
-# H2 - Depth of last discharge (mAh)
-# H3 - Depth of average discharge (mAh)
-# H4 - Number of charge cycles
-# H5 - Number of full discharges
-# H6 - Cumulative amp hours drawn (mAh)
-# H7 - Minimum main battery voltage (mV)
-# H8 - Maximum main battery voltage (mV)
-# H9 - Num seconds since last full charge
-# H10 - Number of automatic synchronizations
-# H11 - Number of low main voltage alarms
-# H12 - Number of high main voltage alarms
-# H15 - Number of low auxiliary voltage alarms
-# H16 - Number of high auxiliary voltage alarms
-# H17 - Amount of discharged energy (0.01 kWh)
-# H18 - Amount of charged energy (0.01 kWh)
-# CHECKSUM - Modulo sum of all bytes since last checksum, should equal 0
-# PID - Id of the device
-# V - Main battery voltage (mV)
-# VS - Auxiliary voltage (mv)
-# I - Battery shunt current (mA)
-# P - Instantaneous Power (W)
-# CE - Consumed Amp Hours (mAh)
-# SOC - State of charge (percentage)
-# TTG - Time-to-go (minutes)
-# ALARM - Alarm active
-# RELAY - Relay state
-# AR - Alarm reason
-# BMV - String label of the BMV (ignore)
-# FW -  Firmware version
+# For more information on the protocol, view the Whitepaper in the URSS drive.
 class VictronDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(VictronDevice, self).__init__(cache, portName, 19200)
