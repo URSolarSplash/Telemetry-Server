@@ -49,6 +49,10 @@ class SerialManager:
 			return
 		# Scan through the entire list of serial ports looking for devices
 		portNames = []
+
+		# Debug: Ignore devices
+		if config.ignoreDevices:
+			portList = []
 		for port in portList:
 			portNames.append(port[0])
 			portAlreadyOpen = False

@@ -72,9 +72,18 @@ portBlacklist = [
 ]
 
 # Database path
-# Folder must
+# Folder must exist
 dbFolder = "~/SOLAR_SPLASH/telemetry/"
 dbFile = "test1.db"
+
+# Prefix for each session of telemetry data
+dbTablePrefix = "dataSession"
+
+# Whether to erase the database on start
+dbEraseOnStart = False
+
+# Debug: Ignore all devices, don't connect to anything
+ignoreDevices = True
 
 # Interval at which devices are polled
 pollRate = 0.01

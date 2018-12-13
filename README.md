@@ -33,3 +33,9 @@ The server runs in a background thread. Once started, it will:
 - If a network is connected, upload the data points to a remote server.
 
 ## How to Use
+The Telemetry Server can be run in headless mode, or as part of the Telemetry UI. The Telemetry UI will automatically run the Server when it is started, so manual installation of the Telemetry Server is only needed for headless mode. In both cases, the Server requires some prerequisite libraries to be installed.
+
+### Prerequisite Libraries
+#### Python
+`pip install websockets`<br>
+`pip install peewee`

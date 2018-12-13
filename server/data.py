@@ -142,13 +142,40 @@ class Database:
         self.lastSave = time()
         # Create the database object. Will create file if not exists
         self.db = sqlite3.connect(self.filename)
+        self.sessionList = []
+        self.sessionId = 0
+        self.tableName = None
+        self.getSessions()
+        # Auto set the session id to one past the existing session
+        while (config.dbTablePrefix + str(self.sessionId)) in self.sessionList:
+            self.sessionId += 1
         self.setSchema()
+
+    # Gets all the sessions that exist in the database.
+    def getSessions(self):
+        cursor = self.db.cursor()
+        self.sessionList = []
+        for row in cursor.execute("select name from sqlite_master WHERE type='table';"):
+            self.sessionList.append(str(row[0]))
+        print(self.sessionList)
+        self.db.commit()
 
     def resetTimestamp(self):
         self.timestampOffset = time()
 
     def shutdown(self):
         self.db.close()
+
+    def getSessionId(self):
+        return self.sessionId
+
+    def incrementSessionId(self):
+        self.sessionId += 1
+        self.createSessionTable()
+
+    def setSessionId(self,id):
+        self.sessionId = id
+        self.createSessionTable()
 
     def saveData(self):
         if time() - self.lastSave < config.saveRate:
@@ -171,26 +198,53 @@ class Database:
         timestamp = time() - self.timestampOffset
         valueList.insert(0, timestamp)
         #print("[Saving database row with timestamp {0}]".format(timestamp))
-        cursor.execute("insert into data(timestamp"+fields+") values (?"+valuePlaceholders+")",valueList)
+        cursor.execute("insert into "+self.tableName+"(timestamp"+fields+") values (?"+valuePlaceholders+")",valueList)
         self.db.commit()
 
     def clearData(self):
-        # Removes all data
+        # Removes all data from the current session
         cursor = self.db.cursor()
-        cursor.execute("delete from data;")
+        cursor.execute("delete from "+self.tableName+";")
         self.db.commit()
 
-    def setSchema(self):
+    # Creates a session table for the current session id, if it doesn't exist
+    def createSessionTable(self):
         cursor = self.db.cursor()
-        if self.overwriteOnStart:
-            print("Overwriting database table...")
-            cursor.execute("drop table if exists data;")
-            self.db.commit()
+        # Create the session metadata table
+        cursor.execute('''create table if not exists sessionMetadata(session TEXT PRIMARY KEY, created TEXT, UNIQUE(session))''')
+        self.db.commit()
+
         createTableCommand = '''create table if not exists '''
+        self.tableName = config.dbTablePrefix + str(self.sessionId)
         tableFields = '''id INTEGER PRIMARY KEY, timestamp NUMERIC'''
         for key in sorted(self.cache.getKeys()):
             tableFields += ", {0} NUMERIC".format(key)
-        print("Creating database schema:")
-        print(createTableCommand + "data("+tableFields+")")
-        cursor.execute(createTableCommand + "data("+tableFields+")")
+        #print("Creating database schema:")
+        #print(createTableCommand + "data("+tableFields+")")
+        cursor.execute(createTableCommand + self.tableName +"("+tableFields+")")
         self.db.commit()
+
+        # Insert a timestamp into session metadata for when this session was created
+        cursor.execute("insert or ignore into sessionMetadata(session, created) values(?,datetime('now'))",[self.tableName])
+        self.db.commit()
+
+        # Update the session list
+        self.getSessions()
+        print("[Database] Updated sessions. Current session name: "+self.tableName)
+        print("[Database] Total number of sessions: "+str(len(self.sessionList)))
+
+        # Update statistic with active session
+        statistics.stats["activeSession"] = self.tableName
+
+    def setSchema(self):
+        cursor = self.db.cursor()
+        # If we are set to overwrite all the tables, delete them all.
+        if self.overwriteOnStart:
+            print("Overwriting database table(s)...")
+            for table in self.sessionList:
+                cursor.execute("drop table if exists "+table+";")
+            self.db.commit()
+            # Reset session id
+            self.sessionId = 0
+        # Create the session table
+        self.createSessionTable()
