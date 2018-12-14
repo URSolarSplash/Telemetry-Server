@@ -1,18 +1,13 @@
 # Keys in the SQLite table
 dataKeys = [
-    "vescTemp",
-    "vescOutCurrent",
-    "vescInCurrent",
-    "vescDutyCycle",
-    "vescRpm",
-    "vescInVoltage",
-    "vescError",
-    "alltraxTemp",
-    "alltraxInVoltage",
-    "alltraxOutCurrent",
-    "alltraxInCurrent",
-    "alltraxDutyCycle",
-    "alltraxError",
+    "controllerTemp",
+    "controllerOutCurrent",
+    "controllerInCurrent",
+    "controllerDutyCycle",
+    "controllerRpm",
+    "controllerInVoltage",
+    "vescFault",
+    "alltraxFault",
     "batteryPackVoltage",
     "batteryCellVoltage0",
     "batteryCellVoltage1",
@@ -47,12 +42,10 @@ dataKeys = [
     "gpsLatitude",
     "gpsLongitude",
     "gpsNumSatellites",
-    "throttlePercentage",
-    "windPercentHumidity",
-    "windTemperature",
-    "windSpeed",
-    "windAverageSpeed",
-    "windWarningState"
+    "usbGpsLatitude",
+    "usbGpsLongitude",
+    "usbGpsNumSatellites",
+    "throttle"
 ]
 
 # Defines thresholds for any values
@@ -60,9 +53,12 @@ dataKeys = [
 # element 0 is the minimum, element 1 is maximum
 # alarm is TRUE if the data is out of this range
 alarmThresholds = {
-    'bmvVoltage' : [12,40],
-    'bmvCurrent' : [-10,100],
-    'bmvStateOfCharge' : [50,100]
+    'bmvVoltage' : [32,40],
+    'bmvAuxVoltage' : [32,40],
+    'bmvCurrent' : [-20,100],
+    'bmvStateOfCharge' : [50,100],
+    'motorTemp' : [50,150],
+    'motorRpm' : [0,3600]
 }
 
 # Blacklist for serial ports

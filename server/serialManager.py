@@ -106,7 +106,7 @@ class SerialManager:
 				deviceInstance = UsbWindSensorDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
-				deviceInstance = TelemetryNodeDevice(self.cache,portId)
+				deviceInstance = TelemetryTextDevice(self.cache,portId)
 
 			# Add newly opened device to the list
 			self.devices.append(deviceInstance)

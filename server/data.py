@@ -198,7 +198,10 @@ class Database:
         timestamp = time() - self.timestampOffset
         valueList.insert(0, timestamp)
         #print("[Saving database row with timestamp {0}]".format(timestamp))
-        cursor.execute("insert into "+self.tableName+"(timestamp"+fields+") values (?"+valuePlaceholders+")",valueList)
+        sqlQuery = "insert into "+self.tableName+"(timestamp"+fields+") values (?"+valuePlaceholders+")"
+        #print(sqlQuery)
+        #print(valueList)
+        cursor.execute(sqlQuery,valueList)
         self.db.commit()
 
     def clearData(self):

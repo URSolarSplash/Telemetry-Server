@@ -3,7 +3,7 @@ import time
 
 class TelemetryTextDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
-		super(TelemetryDevice, self).__init__(cache, portName, 115200)
+		super(TelemetryTextDevice, self).__init__(cache, portName, 115200)
 	def update(self):
 		if self.open:
 			try:

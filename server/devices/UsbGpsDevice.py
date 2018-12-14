@@ -18,11 +18,11 @@ class UsbGpsDevice(GenericSerialDevice):
 						msg = pynmea2.parse(rawLine)
 						if isinstance(msg, pynmea2.types.talker.GGA):
 							if msg.gps_qual > 0:
-								self.cache.set("gpsLatitude",msg.lat)
-								self.cache.set("gpsLongitude",msg.lon)
-								self.cache.set("gpsNumSatellites",msg.num_sats)
+								self.cache.set("usbGpsLatitude",msg.lat)
+								self.cache.set("usbGpsLongitude",msg.lon)
+								self.cache.set("usbGpsNumSatellites",msg.num_sats)
 							else:
-								self.cache.set("gpsNumSatellites",0)
+								self.cache.set("usbGpsNumSatellites",0)
 					else:
 						self.buffer += c
 			except Exception as e:

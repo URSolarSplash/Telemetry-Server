@@ -6,10 +6,19 @@ import sys
 import struct
 from .. import statistics
 
+# State Constants
 STATE_UNCONNECTED = 0 # Waiting for a initial message (0x69) from the node
 STATE_CONNECTED_INIT = 1 # Got 0x69 packet, sent 0x68 response, waiting for device ID
 STATE_CONNECTED_CONFIRMED = 2 # Connection active, waiting for data
 STATE_CONNECTED_RECEIVING = 3 # Connection active, receiving a packet.
+
+# Device ID Constants
+DEVICE_ALLTRAX = 0x00
+DEVICE_VESC = 0x01
+DEVICE_MOTOR_BOARD = 0x02
+DEVICE_BATTERY_BOARD = 0x03
+DEVICE_GPS_IMU = 0x04
+DEVICE_THROTTLE = 0x05
 
 #TelemetryNode implementing URSS telemetry protocol
 class TelemetryNodeDevice(GenericSerialDevice):
@@ -21,8 +30,59 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		self.state = STATE_UNCONNECTED
 		self.connectionTimeout = 0
 		self.deviceId = None
+
 	def millis(self):
 		return time.time()*1000
+
+	def getChecksum(self,packet):
+		sum = 0
+		for i in range(16):
+			sum += packet[i]
+		return (sum % 256)
+
+	def unpack(self,packet):
+		if (self.deviceId == DEVICE_ALLTRAX):
+			self.cache.set("controllerTemp",(packet[2] << 8 | packet[1]))
+			self.cache.set("controllerInVoltage",(packet[4] << 8 | packet[3]))
+			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
+			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
+			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
+			self.cache.set("alltraxFault",packet[10])
+		elif (self.deviceId == DEVICE_VESC):
+			self.cache.set("controllerTemp",(packet[2] << 8 | packet[1]))
+			self.cache.set("controllerInVoltage",(packet[4] << 8 | packet[3]))
+			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
+			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
+			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
+			self.cache.set("vescFault",packet[10])
+		elif (self.deviceId == DEVICE_MOTOR_BOARD):
+			motorTemp = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
+			motorRpm = struct.unpack(">f",chr(packet[8])+chr(packet[7])+chr(packet[6])+chr(packet[5]))[0]
+			propRpm = struct.unpack(">f",chr(packet[12])+chr(packet[11])+chr(packet[10])+chr(packet[9]))[0]
+			self.cache.set("motorTemp",motorTemp)
+			self.cache.set("motorRpm",motorRpm)
+			self.cache.set("propRpm",propRpm)
+		elif (self.deviceId == DEVICE_BATTERY_BOARD):
+			pass
+		elif (self.deviceId == DEVICE_GPS_IMU):
+			if (packet[14] == 0):
+				latitude = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
+				longitude = struct.unpack(">f",chr(packet[8])+chr(packet[7])+chr(packet[6])+chr(packet[5]))[0]
+				self.cache.set("gpsLatitude",latitude)
+				self.cache.set("gpsLongitude",longitude)
+				self.cache.set("gpsTimestamp",(packet[12] << 24 | packet[11] << 16 | packet[10] << 8 | packet[9]))
+				self.cache.set("gpsNumSatellites",(packet[13]))
+			elif (packet[14] == 1):
+				speed = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
+				heading = (packet[5]/255.0)*360.0
+				self.cache.set("gpsHeading",heading)
+				self.cache.set("gpsSpeed",speed)
+			else:
+				print("[Telemetry Node] GPS IMU board invalid packet state!")
+				statistics.stats["numDroppedNodePackets"] += 1
+		elif (self.deviceId == DEVICE_THROTTLE):
+			self.cache.set("throttle",packet[2] << 8 | packet[1])
+
 	def update(self):
 		#print(self.state)
 		try:
@@ -41,7 +101,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				else:
 					if(self.port.in_waiting!=0):
 						self.deviceId = ord(self.port.read(1))
-						print("[Telemetry Node] Connecting to device id "+hex(self.deviceId))
+						print("[Telemetry Node] Connected to device id "+hex(self.deviceId))
 						self.port.write(chr(0x67))
 						self.lastResponse = self.millis()
 						self.state = STATE_CONNECTED_CONFIRMED
@@ -83,5 +143,11 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		packet[0] = 0xF0
 		for i in range(15):
 			packet[i+1]=ord(self.port.read(1))
-		#unpack(packet)
-		print("[Telemetry Node] recv'd packet:"+str(packet))
+		checksumValue = self.getChecksum(packet)
+		#print(checksumValue)
+		if (checksumValue == 255):
+			self.unpack(packet)
+		else:
+			print("[Telemetry Node] Packet failed checksum. Packet fropped! checksum value = "+str(checksumValue))
+			statistics.stats["numDroppedNodePackets"] += 1
+		#print("[Telemetry Node] recv'd packet:"+str(packet))

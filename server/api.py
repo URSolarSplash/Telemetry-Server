@@ -36,6 +36,8 @@ def liveAlarms():
     alarms = dataInstance.getAlarms()
     for i, alarmKey in enumerate(alarms.keys()):
         alarmValue = dataInstance.get(alarmKey)
+        if alarmValue == None:
+            alarmValue = "null"
         alarmMin = config.alarmThresholds[alarmKey][0]
         alarmMax = config.alarmThresholds[alarmKey][1]
         if (i > 0):
