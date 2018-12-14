@@ -1,5 +1,6 @@
 # Main telemetry server file
 from server.data import *
+from server.mocker import *
 from server.serialManager import SerialManager
 from server.radio import RadioManager
 from server.api import HTTPServerManager
@@ -38,6 +39,10 @@ server = HTTPServerManager(data)
 # Used for remote data collection etc...
 data.setRadioMirror(radio)
 
+# Set up data mocker
+# Writes fake data for testing purposes
+mocker = DataMocker(data)
+
 try:
     while True:
         # Update the device list and connect to new devices
@@ -51,6 +56,9 @@ try:
         # If the data cache has valid data, save into the database
         if data.hasValidData():
             database.saveData()
+
+        # Update mock data
+        mocker.update()
 
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")

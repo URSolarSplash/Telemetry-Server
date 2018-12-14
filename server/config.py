@@ -91,6 +91,12 @@ scanRate = 1
 # Interval at which data is saved to database
 saveRate = 1
 
+# Whether to save some mock data for testing
+mockData = True
+
+# Interval at which mock data is updated, if relevant
+mockUpdateRate = 0.1
+
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5
 
