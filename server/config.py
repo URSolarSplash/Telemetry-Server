@@ -1,3 +1,5 @@
+from alarms import *
+
 # Keys in the SQLite table
 dataKeys = [
     "controllerTemp",
@@ -48,17 +50,16 @@ dataKeys = [
     "throttle"
 ]
 
-# Defines thresholds for any values
-# Each item in the dict is a data key, mapped to an array
-# element 0 is the minimum, element 1 is maximum
-# alarm is TRUE if the data is out of this range
+# Defines a list of alarms
+# Each item in the dict is an alarm id, mapped to an alarm object
+# Each alarm is constructed with a data point, description, a minimum value, and a maximum value.
 alarmThresholds = {
-    'bmvVoltage' : [32,40],
-    'bmvAuxVoltage' : [32,40],
-    'bmvCurrent' : [-20,100],
-    'bmvStateOfCharge' : [50,100],
-    'motorTemp' : [50,150],
-    'motorRpm' : [0,3600]
+    'alarmVoltageRange' : Alarm("bmvVoltage","Battery Over/Under Voltage",32,40),
+    'alarmAuxVoltageRange' : Alarm("bmvAuxVoltage","Aux Battery Over/Under Voltage",32,40),
+    'alarmCurrentRange' : Alarm("bmvCurrent","Battery Over/Under Current",-20,100),
+    'alarmStateOfCharge' : Alarm("bmvStateOfCharge","Battery Drain",50,100),
+    'alarmMotorTemp' : Alarm("motorTemp","Motor Over/Under Temperature",50,150),
+    'alarmMotorOverspeed' : Alarm("motorRpm","Motor Over Speed",0,3600)
 }
 
 # Blacklist for serial ports
@@ -90,7 +91,6 @@ scanRate = 1
 
 # Interval at which data is saved to database
 saveRate = 1
-
 
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5

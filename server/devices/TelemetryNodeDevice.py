@@ -34,6 +34,12 @@ class TelemetryNodeDevice(GenericSerialDevice):
 	def millis(self):
 		return time.time()*1000
 
+	def generateChecksum(self,packet):
+		sum = 0
+		for i in range(15):
+			sum += packet[i]
+		return (255 - (sum % 256))
+
 	def getChecksum(self,packet):
 		sum = 0
 		for i in range(16):
@@ -83,6 +89,14 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		elif (self.deviceId == DEVICE_THROTTLE):
 			self.cache.set("throttle",packet[2] << 8 | packet[1])
 
+	def sendHeartbeat(self):
+		packet = [0] * 16
+		packet[0] = 0x50
+		packet[15] = self.generateChecksum(packet)
+		#print("[Telemetry Node] Sending heartbeat packet: "+str(packet))
+		for i in range(16):
+			self.port.write(chr(packet[i]))
+
 	def update(self):
 		#print(self.state)
 		try:
@@ -101,18 +115,22 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				else:
 					if(self.port.in_waiting!=0):
 						self.deviceId = ord(self.port.read(1))
-						print("[Telemetry Node] Connected to device id "+hex(self.deviceId))
-						self.port.write(chr(0x67))
-						self.lastResponse = self.millis()
-						self.state = STATE_CONNECTED_CONFIRMED
+						if self.deviceId == 0x69:
+							self.state = STATE_UNCONNECTED
+						else:
+							print("[Telemetry Node] Connected to device id "+hex(self.deviceId))
+							self.port.write(chr(0x67))
+							self.lastResponse = self.millis()
+							self.lastPulse = self.millis()
+							self.state = STATE_CONNECTED_CONFIRMED
 			# Device is connected and receiving data
 			elif (self.state == STATE_CONNECTED_CONFIRMED):
 				# Every 250 ms, send a heartbeat pulse.
 				if (self.millis() - self.lastPulse >= 250):
-					self.port.write(chr(0x50))
+					self.sendHeartbeat()
 					self.lastPulse = self.millis()
 
-				# If data is received, read and handle the packer.
+				# If data is received, read and handle the packet.
 				if (self.port.in_waiting != 0):
 					byte = ord(self.port.read(1))
 					if (byte == 0xF0):

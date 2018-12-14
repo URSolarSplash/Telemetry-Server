@@ -4,6 +4,7 @@ import time
 import config
 import thread
 import json
+import jsonpickle
 import logging
 import statistics
 log = logging.getLogger('werkzeug')
@@ -31,21 +32,12 @@ def liveData():
 
 @app.route('/alarms',methods=['GET'])
 def liveAlarms():
-    jsonString = ""
-    jsonString += "{"
     alarms = dataInstance.getAlarms()
-    for i, alarmKey in enumerate(alarms.keys()):
-        alarmValue = dataInstance.get(alarmKey)
-        if alarmValue == None:
-            alarmValue = "null"
-        alarmMin = config.alarmThresholds[alarmKey][0]
-        alarmMax = config.alarmThresholds[alarmKey][1]
-        if (i > 0):
-            jsonString += ",\n"
-        else:
-            jsonString +="\n"
-        jsonString += "  \"{0}\" : {{\"state\": {1}, \"value\": {2}, \"range_min\": {3}, \"range_max\": {4}}}".format(alarmKey,"true" if alarms[alarmKey] else "false",alarmValue,alarmMin,alarmMax)
-    jsonString += "\n}"
+    # Update alarms before encoding
+    for alarm in alarms:
+        alarms[alarm].getAlarmState()
+
+    jsonString = json.dumps(alarms)
     response = app.response_class(
         response=jsonString,
         status=200,

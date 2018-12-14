@@ -38,4 +38,5 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 ### Prerequisite Libraries
 #### Python
 `pip install websockets`<br>
-`pip install peewee`
+`pip install peewee`<br>
+`pip install jsonpickle`<br>
