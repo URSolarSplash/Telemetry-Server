@@ -35,11 +35,14 @@ def liveAlarms():
     jsonString += "{"
     alarms = dataInstance.getAlarms()
     for i, alarmKey in enumerate(alarms.keys()):
+        alarmValue = dataInstance.get(alarmKey)
+        alarmMin = config.alarmThresholds[alarmKey][0]
+        alarmMax = config.alarmThresholds[alarmKey][1]
         if (i > 0):
             jsonString += ",\n"
         else:
             jsonString +="\n"
-        jsonString += "  \"{0}\" : {1}".format(alarmKey,"true" if alarms[alarmKey] else "false")
+        jsonString += "  \"{0}\" : {{\"state\": {1}, \"value\": {2}, \"range_min\": {3}, \"range_max\": {4}}}".format(alarmKey,"true" if alarms[alarmKey] else "false",alarmValue,alarmMin,alarmMax)
     jsonString += "\n}"
     response = app.response_class(
         response=jsonString,
