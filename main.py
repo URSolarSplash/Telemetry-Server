@@ -1,6 +1,6 @@
 # Main telemetry server file
 from server.data import *
-from server.mocker import *
+from server.controls import *
 from server.serialManager import SerialManager
 from server.radio import RadioManager
 from server.api import HTTPServerManager
@@ -39,9 +39,8 @@ server = HTTPServerManager(data)
 # Used for remote data collection etc...
 data.setRadioMirror(radio)
 
-# Set up data mocker
-# Writes fake data for testing purposes
-mocker = DataMocker(data)
+# Set up control algorithms manager
+controlAlgorithms = ControlAlgorithms(data)
 
 try:
     while True:
@@ -57,8 +56,9 @@ try:
         if data.hasValidData():
             database.saveData()
 
-        # Update mock data
-        mocker.update()
+        # Update control algorithms
+        if (not config.isSlave):
+            controlAlgorithms.update()
 
 except (KeyboardInterrupt, SystemExit):
     print("\nShutting down...")

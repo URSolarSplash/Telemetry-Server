@@ -95,6 +95,9 @@ class SerialManager:
 				deviceInstance = RadioDevice(self.cache,portId)
 				# Turn on radio flag in statistics
 				statistics.stats["hasRadio"] = True
+				# Disable control algorithms for this session (slave mode).
+				print("[Serial Manager] Setting config to slave mode for duration of this session! Control algorithms disabled.")
+				config.isSlave = True
 			elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
 				print("[Serial Manager] Detected Device Type: U-Blox GPS")
 				deviceInstance = UsbGpsDevice(self.cache,portId)

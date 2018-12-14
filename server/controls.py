@@ -2,16 +2,19 @@ import time
 import config
 import math
 
-class DataMocker:
+# Control Algorithms class
+# Handles all control algorithms which set values.
+# Will be disabled if the server is in "slave" mode.
+class ControlAlgorithms:
 	def __init__(self, cache):
 		self.cache = cache
 		self.lastUpdate = time.time()
 	def update(self):
-		if config.mockData:
-			if time.time() - self.lastUpdate < config.mockUpdateRate:
-				return
-			else:
-				self.lastUpdate = time.time()
+		if time.time() - self.lastUpdate < config.controlAlgorithmUpdateRate:
+			return
+		else:
+			self.lastUpdate = time.time()
+		if config.controlAlgorithmMockData:
 			# Save mock data into the cache for a bunch of data points.
 			self.cache.set("bmvVoltage",20.0+math.sin(time.time())*20.0)
 			self.cache.set("bmvCurrent",15.0+math.sin(time.time()/10.0)*5.0)
@@ -19,3 +22,5 @@ class DataMocker:
 			self.cache.set("motorRpm",motorRpm)
 			self.cache.set("propRpm",motorRpm*0.58)
 			self.cache.set("gpsSpeed",motorRpm*0.01)
+		if config.controlAlgorithmEnduranceThrottle:
+			self.cache.set("throttle",0)

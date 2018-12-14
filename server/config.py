@@ -91,14 +91,25 @@ scanRate = 1
 # Interval at which data is saved to database
 saveRate = 1
 
-# Whether to save some mock data for testing
-mockData = True
-
-# Interval at which mock data is updated, if relevant
-mockUpdateRate = 0.1
 
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5
 
 # Port for the HTTP interface
 httpPort = 8081
+
+
+#--- Control Algorithms Configuration ---
+# Control algorithms can set telemetry data points based on other data points.
+# For example, this can be used to drive the autopilot system in endurance.
+# Will be automatically disabled if the server is "slave",eg, receiving radio telemetry.
+isSlave = False
+
+# Interval at which control algorithms are updated, if relevant
+controlAlgorithmUpdateRate = 0.1
+
+# Control algorithm which saves some mock data for testing
+controlAlgorithmMockData = True
+
+# Control algorithm which auto regulates throttle for endurance
+controlAlgorithmEnduranceThrottle = False
