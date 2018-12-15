@@ -94,8 +94,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		packet[0] = 0x50
 		packet[15] = self.generateChecksum(packet)
 		#print("[Telemetry Node] Sending heartbeat packet: "+str(packet))
-		for i in range(16):
-			self.port.write(chr(packet[i]))
+		self.port.write(bytearray(packet))
 
 	def update(self):
 		#print(self.state)
