@@ -1,4 +1,4 @@
-from GenericSerialDevice import *
+from .GenericSerialDevice import GenericSerialDevice
 
 # Decodes the Victron VE.Direct text-based protocol
 # For more information on the protocol, view the Whitepaper in the URSS drive.
@@ -19,8 +19,9 @@ class VictronDevice(GenericSerialDevice):
 				if waitingBytes == 0:
 					return
 				for c in self.port.read(waitingBytes):
-					if c == b'\n':
-						rawLine = str(self.buffer).lstrip().rstrip()
+					if c == ord(b'\n'):
+						bytesToString = "".join(map(chr, self.buffer));
+						rawLine = bytesToString.lstrip().rstrip()
 						dataArray = rawLine.split('\t',1)
 						if len(dataArray) == 2:
 							victronCommand = dataArray[0]
@@ -48,13 +49,13 @@ class VictronDevice(GenericSerialDevice):
 								self.statusTimeRemaining = float(victronData)
 								self.saveData()
 
-						self.buffer=b''
+						self.buffer=[]
 						#self.statusVoltage = int(m.group(1))/1000.0
 						#self.statusCurrent = int(m.group(3))/1000.0
 						#self.statusStateOfCharge = int(m.group(5))/1000.0
 						#self.saveData()
 					else:
-						self.buffer += c
+						self.buffer.append(c)
 			except Exception as e:
 				print(e)
 				self.close()

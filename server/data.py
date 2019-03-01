@@ -1,7 +1,7 @@
 from time import time
-import config
+import server.config as config
+import server.statistics as statistics
 import sqlite3
-import statistics
 
 # Stores a single data point, which is a value that expires if it's too old.
 # - get(): gets the value, or None if value is >timeout seconds old.

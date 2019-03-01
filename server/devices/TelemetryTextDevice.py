@@ -1,5 +1,6 @@
-from GenericSerialDevice import *
+from .GenericSerialDevice import GenericSerialDevice
 import time
+import regex
 
 class TelemetryTextDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
@@ -11,10 +12,11 @@ class TelemetryTextDevice(GenericSerialDevice):
 				if waitingBytes == 0:
 					return
 				for c in self.port.read(waitingBytes):
-					if c == b'\n':
-						rawLine = str(self.buffer).lstrip().rstrip().replace('\t',' ') # Replace tabs with spaces and strip whitespace
-						rawLine = re.sub('/\p{C}+/u','',rawLine) # Replace invisible characters
-						self.buffer=b'' # Reset the buffer
+					if c == ord(b'\n'):
+						bytesToString = "".join(map(chr, self.buffer));
+						rawLine = bytesToString.lstrip().rstrip().replace('\t',' ') # Replace tabs with spaces and strip whitespace
+						rawLine = regex.sub('/\\p{C}+/u','',rawLine) # Replace invisible characters
+						self.buffer=[] # Reset the buffer
 						# Extract variable name and value
 						dataArray = rawLine.split(':',1)
 						dataName = dataArray[0]
@@ -24,7 +26,7 @@ class TelemetryTextDevice(GenericSerialDevice):
 						#print("[Telemetry Device] time since last packet: {0}".format(delay*1000))
 						self.lastTime = time.time()
 					else:
-						self.buffer += c
+						self.buffer.append(c)
 			except Exception as e:
 				print(e)
 				self.close()

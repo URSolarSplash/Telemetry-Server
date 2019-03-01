@@ -1,4 +1,4 @@
-from GenericSerialDevice import *
+from .GenericSerialDevice import GenericSerialDevice
 import time
 import serial
 import time

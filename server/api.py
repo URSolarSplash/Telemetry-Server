@@ -1,11 +1,11 @@
 from flask import Flask, jsonify
 import smtplib
 import time
-import config
-import thread
+import server.config as config
+import threading
 import json
 import logging
-import statistics
+import server.statistics as statistics
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
@@ -74,4 +74,4 @@ class HTTPServerManager:
         print("[HTTP Server Manager] Starting server instance...")
         global dataInstance
         dataInstance = cache
-        thread.start_new_thread(flaskThread,())
+        threading.Thread(target=flaskThread).start()

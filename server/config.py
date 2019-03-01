@@ -1,4 +1,4 @@
-from alarms import *
+from server.alarms import *
 
 # Keys in the SQLite table
 dataKeys = [

@@ -6,4 +6,4 @@ echo "Starting Telemetry Server..."
 cd /mnt/usb/
 
 # Run python telemetry server program
-python main.py
+python3 main.py

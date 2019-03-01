@@ -5,16 +5,16 @@ import sys
 import atexit
 import platform
 import re
-import config
-from devices.TelemetryNodeDevice import *
-from devices.RadioDevice import *
-from devices.TelemetryNodeDevice import *
-from devices.TelemetryTextDevice import *
-from devices.UsbGpsDevice import *
-from devices.UsbWindSensorDevice import *
-from devices.VictronDevice import *
-from devices.VescDevice import *
-import statistics
+import server.config as config
+from server.devices.TelemetryNodeDevice import *
+from server.devices.RadioDevice import *
+from server.devices.TelemetryNodeDevice import *
+from server.devices.TelemetryTextDevice import *
+from server.devices.UsbGpsDevice import *
+from server.devices.UsbWindSensorDevice import *
+from server.devices.VictronDevice import *
+from server.devices.VescDevice import *
+import server.statistics as statistics
 
 class SerialDevice:
 	def __init__(self, id, baud):

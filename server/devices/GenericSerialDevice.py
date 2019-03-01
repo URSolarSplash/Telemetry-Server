@@ -1,4 +1,4 @@
-import re
+import regex
 import serial
 import ast
 from .. import statistics
@@ -12,7 +12,7 @@ class GenericSerialDevice(object):
 		self.portName = portName
 		self.baudRate = baudRate
 		self.lastTime = time.time()
-		self.buffer = b''
+		self.buffer = []
 		self.cache = cache
 		print("[Serial Device] Opened serial connection on port "+portName+", with baud rate "+str(baudRate)+".")
 		try:

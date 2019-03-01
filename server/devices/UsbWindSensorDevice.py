@@ -1,4 +1,4 @@
-from GenericSerialDevice import *
+from .GenericSerialDevice import GenericSerialDevice
 
 class UsbWindSensorDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
