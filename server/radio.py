@@ -18,11 +18,11 @@ class RadioManager():
             )
             self.mode = 1
             statistics.stats["hasRadio"] =  True
-            print("[Radio Manager] Detected serial telemetry device.")
+            print("[Radio] Detected serial telemetry device.")
         except (serial.SerialException):
             self.mode = 0
             statistics.stats["hasRadio"] =  False
-            print("[Radio Manager] No detected serial telemetry device.")
+            print("[Radio] No detected serial telemetry device.")
     def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream
         dataString= "{0}:{1}\n".format(dataName,dataValue)
@@ -34,4 +34,4 @@ class RadioManager():
             self.serialPortWrite.close()
         except:
             pass
-        print("[Radio Manager] shutdown complete.")
+        print("[Radio] shutdown complete.")

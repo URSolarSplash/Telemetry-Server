@@ -11,9 +11,12 @@ import signal
 import os
 from os.path import expanduser
 
+print("[Main] Initializing Telemetry Server...")
+
 # Create base database folder if it doesnt exists
 config.dbFolder = expanduser(config.dbFolder)
 if not os.path.exists(config.dbFolder):
+    print("[Database] Creating base database folder...")
     os.makedirs(config.dbFolder)
 
 # Create a data cache and Database
@@ -42,6 +45,8 @@ data.setRadioMirror(radio)
 # Set up control algorithms manager
 controlAlgorithms = ControlAlgorithms(data)
 
+print("[Main] Telemetry Server Initialized.")
+
 try:
     while True:
         # Update the device list and connect to new devices
@@ -61,7 +66,7 @@ try:
             controlAlgorithms.update()
 
 except (KeyboardInterrupt, SystemExit):
-    print("\nShutting down...")
+    print("\n[Main] Shutting down...")
 
 serial.shutdown()
 radio.shutdown()

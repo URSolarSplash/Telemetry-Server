@@ -149,7 +149,7 @@ class Database:
         self.sessionList = []
         for row in cursor.execute("select name from sqlite_master WHERE type='table';"):
             self.sessionList.append(str(row[0]))
-        print(self.sessionList)
+        #print(self.sessionList)
         self.db.commit()
 
     def resetTimestamp(self):
@@ -225,8 +225,8 @@ class Database:
 
         # Update the session list
         self.getSessions()
-        print("[Database] Updated sessions. Current session name: "+self.tableName)
-        print("[Database] Total number of sessions: "+str(len(self.sessionList)))
+        print("[Database] Current session name: "+self.tableName)
+        #print("[Database] Total number of sessions: "+str(len(self.sessionList)))
 
         # Update statistic with active session
         statistics.stats["activeSession"] = self.tableName
@@ -235,7 +235,7 @@ class Database:
         cursor = self.db.cursor()
         # If we are set to overwrite all the tables, delete them all.
         if self.overwriteOnStart:
-            print("Overwriting database table(s)...")
+            print("[Database] Overwriting previous sessions...")
             for table in self.sessionList:
                 cursor.execute("drop table if exists "+table+";")
             cursor.execute("drop table if exists sessionMetadata;")
@@ -243,4 +243,5 @@ class Database:
             # Reset session id
             self.sessionId = 0
         # Create the session table
+        #print("[Database] Creating new session with id = "+str(self.sessionId)+"...")
         self.createSessionTable()
