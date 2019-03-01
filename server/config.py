@@ -66,7 +66,10 @@ alarmThresholds = {
 portBlacklist = [
     "/dev/cu.Bluetooth-Incoming-Port",
     "/dev/ttyAMA0",
-    "/dev/cu.JBLCharge3-SPPDev-1"
+    "/dev/cu.JBLCharge3-SPPDev-1",
+    "/dev/cu.BIGJAMBOXbyJawbone-SPPD",
+    "/dev/cu.Bluetooth-Incoming-Port",
+    "/dev/cu.BoseSoundSport-SPPDev"
 ]
 
 # Database path
@@ -109,7 +112,7 @@ isSlave = False
 controlAlgorithmUpdateRate = 0.1
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = True
+controlAlgorithmMockData = False
 
 # Control algorithm which auto regulates throttle for endurance
 controlAlgorithmEnduranceThrottle = False

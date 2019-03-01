@@ -16,7 +16,7 @@ class ControlAlgorithms:
 			self.lastUpdate = time.time()
 		if config.controlAlgorithmMockData:
 			# Save mock data into the cache for a bunch of data points.
-			self.cache.set("bmvVoltage",20.0+math.sin(time.time())*20.0)
+			self.cache.set("bmvVoltage",35.0+math.sin(time.time()/10000.0)*1.0)
 			self.cache.set("bmvCurrent",15.0+math.sin(time.time()/10.0)*5.0)
 			motorRpm = (3000.0+math.sin(time.time()/5.0)*1500.0)*((time.time() % 100)/100)
 			self.cache.set("motorRpm",motorRpm)
