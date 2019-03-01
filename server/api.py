@@ -4,7 +4,6 @@ import time
 import config
 import thread
 import json
-import jsonpickle
 import logging
 import statistics
 log = logging.getLogger('werkzeug')

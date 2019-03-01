@@ -13,6 +13,7 @@ from devices.TelemetryTextDevice import *
 from devices.UsbGpsDevice import *
 from devices.UsbWindSensorDevice import *
 from devices.VictronDevice import *
+from devices.VescDevice import *
 import statistics
 
 class SerialDevice:
@@ -107,9 +108,12 @@ class SerialManager:
 			elif portDescription.startswith("CP2102 USB to UART"):
 				print("[Serial Manager] Detected Device Type: Wind Sensor")
 				deviceInstance = UsbWindSensorDevice(self.cache,portId)
+			elif portDescription.startswith("ChibiOS_RT"):
+				print("[Serial Manager] Detected Device Type: Vesc Motor Controller")
+				deviceInstance = VescDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
-				deviceInstance = TelemetryNodeDevice(self.cache,portId)
+				deviceInstance = TelemetryTextDevice(self.cache,portId)
 
 			# Add newly opened device to the list
 			self.devices.append(deviceInstance)
