@@ -28,6 +28,11 @@ class DataPoint:
             return self.value
         else:
             return None
+    def getNumerical(self,default):
+        if (not self.isExpired()):
+            return self.value
+        else:
+            return default
     def getMin(self):
         if self.hasMin:
             return self.minValue
@@ -78,6 +83,14 @@ class DataCache:
         # If it doesn't exist, return a null value
         if name in self.values:
             return self.values[name].get()
+        else:
+            print("[Tried to get invalid key [{0}]]".format(name))
+            return None
+    def getNumerical(self, name, default):
+        # Get a data point's value if it exists
+        # If it doesn't exist, return a default value
+        if name in self.values:
+            return self.values[name].getNumerical(default)
         else:
             print("[Tried to get invalid key [{0}]]".format(name))
             return None

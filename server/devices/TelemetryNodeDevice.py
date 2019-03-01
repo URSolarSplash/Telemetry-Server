@@ -48,8 +48,8 @@ class TelemetryNodeDevice(GenericSerialDevice):
 
 	def unpack(self,packet):
 		if (self.deviceId == DEVICE_ALLTRAX):
-			self.cache.set("controllerTemp",(packet[2] << 8 | packet[1]))
-			self.cache.set("controllerInVoltage",(packet[4] << 8 | packet[3]))
+			self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
+			self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
 			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
 			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
 			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
@@ -92,8 +92,33 @@ class TelemetryNodeDevice(GenericSerialDevice):
 	def sendHeartbeat(self):
 		packet = [0] * 16
 		packet[0] = 0x50
+		#insert packing here
+		if(self.deviceId == DEVICE_ALLTRAX):
+			#alltrax packing
+			throt = self.cache.getNumerical('throttle',0)
+			#throt = 0
+			packet[2] = throt & 0xFF
+			packet[1] = (throt & 0xFF00)>>8
+			'''
+			pakcet[1] = 232
+			packet[2] = 3
+			'''
+		elif(self.deviceId == DEVICE_VESC):
+			#vesc packing
+			throt = self.cache.get('throttle')
+			packet[2] = throt & 0xFF
+			packet[1] = (throt & 0xFF00)>>8
+			'''
+			pakcet[1] = 232
+			packet[2] = 3
+			'''
+		elif(self.deviceId == DEVICE_THROTTLE):
+			#throttle packing (TODO)
+			pass
+		else:
+			#default packing (none)
+			pass
 		packet[15] = self.generateChecksum(packet)
-		#print("[Telemetry Node] Sending heartbeat packet: "+str(packet))
 		self.port.write(bytearray(packet))
 
 	def update(self):
