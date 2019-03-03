@@ -47,6 +47,9 @@ dataKeys = [
     "usbGpsLatitude",
     "usbGpsLongitude",
     "usbGpsNumSatellites",
+    "throttleCurrentTarget",
+    "throttleCutoff",
+    "throttleMode",
     "throttle"
 ]
 
@@ -99,7 +102,10 @@ saveRate = 1
 dataTimeOut = 5
 
 # Port for the HTTP interface
-httpPort = 8081
+httpPort = 5000
+
+# Whether to log http requests
+httpLogging = False
 
 
 #--- Control Algorithms Configuration ---
@@ -109,10 +115,7 @@ httpPort = 8081
 isSlave = False
 
 # Interval at which control algorithms are updated, if relevant
-controlAlgorithmUpdateRate = 0.1
+controlAlgorithmUpdateRate = 0.05
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = False
-
-# Control algorithm which auto regulates throttle for endurance
-controlAlgorithmEnduranceThrottle = False
+controlAlgorithmMockData = True
