@@ -61,7 +61,7 @@ class VictronDevice(GenericSerialDevice):
 				self.close()
 	def saveData(self):
 		# Commit the cached data to the database
-		#print("Battery Data: {0}V, {1}A, SOC:{2}".format(self.statusVoltage,self.statusCurrent,self.statusStateOfCharge))
+		print("Battery Data: {0}V, {1}A, SOC:{2}".format(self.statusVoltage,self.statusCurrent,self.statusStateOfCharge))
 		self.cache.set("bmvVoltage",self.statusVoltage)
 		self.cache.set("bmvAuxVoltage",self.statusAuxVoltage)
 		self.cache.set("bmvCurrent",self.statusCurrent)

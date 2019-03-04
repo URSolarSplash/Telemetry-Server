@@ -2,6 +2,7 @@ import time
 import server.config as config
 import math
 import random
+from simple_pid import PID
 
 # Control Algorithms class
 # Handles all control algorithms which set values.
@@ -10,6 +11,7 @@ class ControlAlgorithms:
     def __init__(self, cache):
         self.cache = cache
         self.lastUpdate = time.time()
+        self.throttlePid = PID(1.5,0.1,0.0,setpoint=0)
     def update(self):
         if time.time() - self.lastUpdate < config.controlAlgorithmUpdateRate:
             return
@@ -23,11 +25,11 @@ class ControlAlgorithms:
             self.cache.set("motorRpm",motorRpm)
             self.cache.set("propRpm",motorRpm*0.58)
             self.cache.set("gpsSpeed",motorRpm*0.01+random.random())
-            self.cache.set("throttleCutoff",50+math.sin(time.time()/5.0)*50)
-            self.cache.set("throttleCurrentTarget",-60)
-            if (self.cache.getNumerical("throttleCutoff",0) > 90):
-                self.cache.set("throttleCurrentTarget",-100)
-            self.cache.set("throttleMode",1)
+            #self.cache.set("throttleCutoff",50+math.sin(time.time()/5.0)*50)
+            #self.cache.set("throttleCurrentTarget",-60)
+            #if (self.cache.getNumerical("throttleCutoff",0) > 90):
+            #    self.cache.set("throttleCurrentTarget",-100)
+            #self.cache.set("throttleMode",1)
         ## ------ AUTO THROTTLE REGULATION ALGORITHM -------
         # Mode 0 - Manual throttle
         # Mode 1 - Current limiting throttle
@@ -38,16 +40,26 @@ class ControlAlgorithms:
         if self.cache.getNumerical("throttleMode",0) == 0:
             # Mode 0 - Manual Throttle
             # Just set output throttle to the throttle cutoff value.
-            self.cache.set("throttle",self.cache.getNumerical("throttleCutoff",0))
+            self.cache.set("throttle",self.cache.getNumerical("throttleInput",0))
         else:
             # Mode 1 - Current limiting throttle
-            throttleCutoff = self.cache.getNumerical("throttleCutoff",0)
-            current = self.cache.getNumerical("bmvCurrent",0)
-            targetCurrent = self.cache.getNumerical("throttleCurrentTarget",0)
-            throttle = self.cache.getNumerical("throttle",0)
-            if (current < targetCurrent):
-                throttle -= 1;
-            elif (current > targetCurrent):
-                throttle += 1;
-            throttle = min(throttleCutoff, throttle)
+            throttleInput = self.cache.getNumerical("throttleInput",0)
+            throttleOutput = self.cache.getNumerical("throttle",0)
+            currentInput = self.cache.getNumerical("bmvCurrent",0)
+
+            # Map throttle input to a current value
+            self.cache.set("throttleCurrentTarget",throttleInput * -0.6)
+            goalCurrent = self.cache.getNumerical("throttleCurrentTarget",0)
+
+            # Scale currents so positive = drawing current
+            currentInput = -currentInput;
+            goalCurrent = -goalCurrent;
+
+            self.throttlePid.setpoint = goalCurrent
+            pidOut = self.throttlePid(currentInput)
+            print("PID delta = "+str(pidOut))
+            throttle = throttleOutput +pidOut
+            #print("PID output = "+str(throttle))
+
+            throttle = max(min(100,throttle),0)
             self.cache.set("throttle",throttle)

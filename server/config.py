@@ -47,10 +47,10 @@ dataKeys = [
     "usbGpsLatitude",
     "usbGpsLongitude",
     "usbGpsNumSatellites",
+    "throttle",
+    "throttleInput",
     "throttleCurrentTarget",
-    "throttleCutoff",
     "throttleMode",
-    "throttle"
 ]
 
 # Defines a list of alarms
@@ -118,4 +118,4 @@ isSlave = False
 controlAlgorithmUpdateRate = 0.05
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = True
+controlAlgorithmMockData = False
