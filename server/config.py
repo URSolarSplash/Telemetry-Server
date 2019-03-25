@@ -47,6 +47,7 @@ dataKeys = [
     "usbGpsLatitude",
     "usbGpsLongitude",
     "usbGpsNumSatellites",
+    "usbGpsSpeed",
     "throttle",
     "throttleInput",
     "throttleCurrentTarget",

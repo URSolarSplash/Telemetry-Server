@@ -1,0 +1,12 @@
+[Unit]
+Description=URSS Telemetry Status LED
+After=multi-user.target
+
+[Service]
+ExecStart=/urs/bin/python3 /mnt/usb/Telemetry-Server/sentry.py
+WorkingDirectory=/mnt/usb/Telemetry-Server
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

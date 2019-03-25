@@ -1,0 +1,12 @@
+[Unit]
+Description=URSS Telemetry Server
+After=multi-user.target
+
+[Service]
+ExecStart=/bin/bash /mnt/usb/Telemetry-Server/run.sh
+WorkingDirectory=/mnt/usb/Telemetry-Server
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
