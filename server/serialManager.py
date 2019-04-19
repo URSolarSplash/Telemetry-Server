@@ -25,7 +25,7 @@ class SerialDevice:
 		self.mode = None
 		self.lastPolled = time.time()
 	def needsPoll(self):
-		return time() - self.lastPolled > config.pollRate
+		return time.time() - self.lastPolled > config.pollRate
 
 class SerialManager:
 	def __init__(self, cache):
@@ -108,7 +108,7 @@ class SerialManager:
 			elif portDescription.startswith("CP2102 USB to UART"):
 				print("[Serial Manager] Detected Device Type: Wind Sensor")
 				deviceInstance = UsbWindSensorDevice(self.cache,portId)
-			elif portDescription.startswith("ChibiOS_RT"):
+			elif portDescription.startswith("ChibiOS"):
 				print("[Serial Manager] Detected Device Type: Vesc Motor Controller")
 				deviceInstance = VescDevice(self.cache,portId)
 			else:
