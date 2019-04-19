@@ -105,8 +105,10 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			'''
 		elif(self.deviceId == DEVICE_VESC):
 			#vesc packing
-			throt = self.cache.get('throttle')
+			#throttle retrived from database as 8-bit (0-255)
+			throt = int((self.cache.get('throttle')/100.0) * 255.0)
 			packet[2] = throt & 0xFF
+			#not necessary for 8-bit throttle but useful for future use
 			packet[1] = (throt & 0xFF00)>>8
 			'''
 			pakcet[1] = 232
