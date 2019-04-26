@@ -113,7 +113,7 @@ class SerialManager:
 				deviceInstance = VescDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
-				deviceInstance = TelemetryTextDevice(self.cache,portId)
+				deviceInstance = TelemetryNodeDevice(self.cache,portId)
 
 			# Add newly opened device to the list
 			self.devices.append(deviceInstance)

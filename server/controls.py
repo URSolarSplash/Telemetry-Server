@@ -61,5 +61,5 @@ class ControlAlgorithms:
             throttle = throttleOutput +pidOut
             #print("PID output = "+str(throttle))
 
-            throttle = max(min(100,throttle),0)
+            throttle = max(min(255,throttle),0)
             self.cache.set("throttle",throttle)

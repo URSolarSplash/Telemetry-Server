@@ -32,7 +32,7 @@ class VescDevice(GenericSerialDevice):
 		#Get the throttle value and write it to the vesc.
 		# Throttle duty cycle value range for vesc: -100,000 to 100,000
 		# Input throttle: 0 to 100
-		throttle = (self.cache.getNumerical('throttle',0) * 1000.0)
+		throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
 		# disable throttle until it is turned down so we don't jerk hard
 		if not self.throttleOutEnable:
 			if throttle <= 5:

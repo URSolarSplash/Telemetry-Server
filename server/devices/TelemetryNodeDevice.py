@@ -5,6 +5,8 @@ import time
 import sys
 import struct
 from .. import statistics
+import traceback
+
 
 # State Constants
 STATE_UNCONNECTED = 0 # Waiting for a initial message (0x69) from the node
@@ -62,9 +64,9 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
 			self.cache.set("vescFault",packet[10])
 		elif (self.deviceId == DEVICE_MOTOR_BOARD):
-			motorTemp = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
-			motorRpm = struct.unpack(">f",chr(packet[8])+chr(packet[7])+chr(packet[6])+chr(packet[5]))[0]
-			propRpm = struct.unpack(">f",chr(packet[12])+chr(packet[11])+chr(packet[10])+chr(packet[9]))[0]
+			motorTemp = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
+			motorRpm = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
+			propRpm = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
 			self.cache.set("motorTemp",motorTemp)
 			self.cache.set("motorRpm",motorRpm)
 			self.cache.set("propRpm",propRpm)
@@ -72,22 +74,33 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			pass
 		elif (self.deviceId == DEVICE_GPS_IMU):
 			if (packet[14] == 0):
-				latitude = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
-				longitude = struct.unpack(">f",chr(packet[8])+chr(packet[7])+chr(packet[6])+chr(packet[5]))[0]
+				# Packet 1/2
+				imuPitch = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
+				imuYaw = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
+				imuRoll = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
+				gpsNumSatellites = packet[13]
+				gpsFix = (gpsNumSatellites > 0)
+				self.cache.set("imuPitch",imuPitch)
+				self.cache.set("imuYaw",imuYaw)
+				self.cache.set("imuRoll",imuRoll)
+				self.cache.set("gpsFix",gpsFix)
+				self.cache.set("gpsNumSatellites",gpsNumSatellites)
+			elif (packet[14] == 1):
+				# Packet 2/2
+				latitude = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
+				longitude = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
+				speedKnots = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
+				heading = (packet[13]/255.0)*360.0
 				self.cache.set("gpsLatitude",latitude)
 				self.cache.set("gpsLongitude",longitude)
-				self.cache.set("gpsTimestamp",(packet[12] << 24 | packet[11] << 16 | packet[10] << 8 | packet[9]))
-				self.cache.set("gpsNumSatellites",(packet[13]))
-			elif (packet[14] == 1):
-				speed = struct.unpack(">f",chr(packet[4])+chr(packet[3])+chr(packet[2])+chr(packet[1]))[0]
-				heading = (packet[5]/255.0)*360.0
+				self.cache.set("gpsSpeedKnots",speedKnots)
 				self.cache.set("gpsHeading",heading)
-				self.cache.set("gpsSpeed",speed)
 			else:
 				print("[Telemetry Node] GPS IMU board invalid packet state!")
 				statistics.stats["numDroppedNodePackets"] += 1
 		elif (self.deviceId == DEVICE_THROTTLE):
-			self.cache.set("throttle",packet[2] << 8 | packet[1])
+			print("Got throttle value")
+			self.cache.set("throttleInput",packet[2] << 8 | packet[1])
 
 	def sendHeartbeat(self):
 		packet = [0] * 16
@@ -95,10 +108,10 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		#insert packing here
 		if(self.deviceId == DEVICE_ALLTRAX):
 			#alltrax packing
-			throt = self.cache.getNumerical('throttle',0)
+			throt = int(self.cache.get('throttle'))
 			#throt = 0
-			packet[2] = throt & 0xFF
-			packet[1] = (throt & 0xFF00)>>8
+			packet[1] = throt & 0xFF
+			packet[2] = (throt & 0xFF00)>>8
 			'''
 			pakcet[1] = 232
 			packet[2] = 3
@@ -106,10 +119,10 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		elif(self.deviceId == DEVICE_VESC):
 			#vesc packing
 			#throttle retrived from database as 8-bit (0-255)
-			throt = int((self.cache.get('throttle')/100.0) * 255.0)
-			packet[2] = throt & 0xFF
+			throt = int(self.cache.get('throttle'))
+			packet[1] = throt & 0xFF
 			#not necessary for 8-bit throttle but useful for future use
-			packet[1] = (throt & 0xFF00)>>8
+			packet[2] = (throt & 0xFF00)>>8
 			'''
 			pakcet[1] = 232
 			packet[2] = 3
@@ -131,7 +144,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				if (self.port.in_waiting != 0):
 					byte=ord(self.port.read(1))
 					if(byte==0x69):
-						self.port.write(chr(0x68))
+						self.port.write(byteChar(0x68))
 						self.state = STATE_CONNECTED_INIT
 						self.connectionTimeout = self.millis()
 			# Connecting sequence
@@ -145,7 +158,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 							self.state = STATE_UNCONNECTED
 						else:
 							print("[Telemetry Node] Connected to device id "+hex(self.deviceId))
-							self.port.write(chr(0x67))
+							self.port.write(byteChar(0x67))
 							self.lastResponse = self.millis()
 							self.lastPulse = self.millis()
 							self.state = STATE_CONNECTED_CONFIRMED
@@ -180,7 +193,9 @@ class TelemetryNodeDevice(GenericSerialDevice):
 					print('[Telemetry Node] dropped packet!')
 					self.state = STATE_CONNECTED_CONFIRMED
 		except Exception as e:
+			print("Error from telemetry node device:")
 			print(e)
+			traceback.print_tb(e.__traceback__)
 			self.close()
 	def readPacket(self):
 		packet = [0] * 16
@@ -195,3 +210,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			print("[Telemetry Node] Packet failed checksum. Packet fropped! checksum value = "+str(checksumValue))
 			statistics.stats["numDroppedNodePackets"] += 1
 		#print("[Telemetry Node] recv'd packet:"+str(packet))
+
+# Hex char to byte string
+def byteChar(char):
+	return bytes(bytearray((char,)))
