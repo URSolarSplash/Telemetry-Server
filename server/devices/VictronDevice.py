@@ -77,7 +77,7 @@ class VictronDevice(GenericSerialDevice):
 			return
 		dataBytes = wrap(rawLine[2:], 2)
 		dataId = int("0x"+dataBytes[1]+dataBytes[0],16)
-		print("0x{0:04X}".format(dataId))
+		#print("0x{0:04X}".format(dataId))
 		# 8 bit: dataValue = int("0x"+dataBytes[3],16)
 		# 16 bit: dataValue = int("0x"+dataBytes[4]+dataBytes[3],16)
 		# 32 bit: dataValue = int("0x"+dataBytes[6]+dataBytes[5]+dataBytes[4]+dataBytes[3],16)

@@ -76,12 +76,10 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			if (packet[14] == 0):
 				# Packet 1/2
 				imuPitch = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
-				imuYaw = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
-				imuRoll = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
-				gpsNumSatellites = packet[13]
-				gpsFix = (gpsNumSatellites > 0)
+				imuRoll = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
+				gpsNumSatellites = packet[9]
+				gpsFix = packet[10]
 				self.cache.set("imuPitch",imuPitch)
-				self.cache.set("imuYaw",imuYaw)
 				self.cache.set("imuRoll",imuRoll)
 				self.cache.set("gpsFix",gpsFix)
 				self.cache.set("gpsNumSatellites",gpsNumSatellites)
@@ -99,7 +97,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				print("[Telemetry Node] GPS IMU board invalid packet state!")
 				statistics.stats["numDroppedNodePackets"] += 1
 		elif (self.deviceId == DEVICE_THROTTLE):
-			print("Got throttle value")
+			#print("Got throttle value")
 			self.cache.set("throttleInput",packet[2] << 8 | packet[1])
 
 	def sendHeartbeat(self):
