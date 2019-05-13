@@ -9,9 +9,6 @@ import server.config as config
 from server.devices.TelemetryNodeDevice import *
 from server.devices.RadioDevice import *
 from server.devices.TelemetryNodeDevice import *
-from server.devices.TelemetryTextDevice import *
-from server.devices.UsbGpsDevice import *
-from server.devices.UsbWindSensorDevice import *
 from server.devices.VictronDevice import *
 from server.devices.VescDevice import *
 import server.statistics as statistics
@@ -45,6 +42,7 @@ class SerialManager:
 			return
 		else:
 			self.lastScan = time.time()
+		#print("[Serial Manager] Updating device list.")
 
 		# Update number of live devices
 		statistics.stats["numActiveDevices"] = len(self.devices)
@@ -99,17 +97,19 @@ class SerialManager:
 				# Disable control algorithms for this session (slave mode).
 				print("[Serial Manager] Setting config to slave mode for duration of this session! Control algorithms disabled.")
 				config.isSlave = True
-			elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
-				print("[Serial Manager] Detected Device Type: U-Blox GPS")
-				deviceInstance = UsbGpsDevice(self.cache,portId)
+			# USB GPS deprecated
+			#elif portDescription.startswith("u_blox 7") or portDescription.startswith("u-blox 7"):
+			#	print("[Serial Manager] Detected Device Type: U-Blox GPS")
+			#	deviceInstance = UsbGpsDevice(self.cache,portId)
 			elif portDescription.startswith("VE Direct"):
-				print("[Serial Manager] Detected Device Type: VE Direct")
+				print("[Serial Manager] Detected Device Type: Victron VE-Direct Device")
 				deviceInstance = VictronDevice(self.cache,portId)
-			elif portDescription.startswith("CP2102 USB to UART"):
-				print("[Serial Manager] Detected Device Type: Wind Sensor")
-				deviceInstance = UsbWindSensorDevice(self.cache,portId)
+			# Wind sensor deprecated
+			#elif portDescription.startswith("CP2102 USB to UART"):
+			#	print("[Serial Manager] Detected Device Type: Wind Sensor")
+			#	deviceInstance = UsbWindSensorDevice(self.cache,portId)
 			elif portDescription.startswith("ChibiOS"):
-				print("[Serial Manager] Detected Device Type: Vesc Motor Controller")
+				print("[Serial Manager] Detected Device Type: VESC Motor Controller")
 				deviceInstance = VescDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
@@ -122,8 +122,9 @@ class SerialManager:
 		# This is identified based on if the serial device is closed
 		# or if the device did not show up on the serial scan
 		for device in self.devices:
-			if not (device.isOpen() and (device.portName in portNames)):
-				device.close()
+			if (not (device.portName in portNames)) or (not device.isOpen()):
+				if (device.isOpen()):
+					device.close()
 				self.devices.remove(device)
 				if type(device) is RadioDevice:
 					statistics.stats["hasRadio"] = False
@@ -134,7 +135,6 @@ class SerialManager:
 		else:
 			self.lastPoll = time.time()
 
-		#print("[Serial Manager] Polling devices...")
 		# Get data from our active device list
 		for device in self.devices:
 			#print("[Serial Manager] - polling "+device.portName)

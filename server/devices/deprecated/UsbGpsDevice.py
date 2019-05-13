@@ -1,6 +1,7 @@
 from .GenericSerialDevice import GenericSerialDevice
 import pynmea2
 
+# Reads a USB-based GPS device. Deprecated, replaced with Node-based GPS board.
 class UsbGpsDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(UsbGpsDevice, self).__init__(cache, portName, 4800)
