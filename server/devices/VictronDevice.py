@@ -16,26 +16,28 @@ class VictronDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(VictronDevice, self).__init__(cache, portName, 19200)
 		self.statusVoltage = 0
-		self.statusAuxVoltage = 0
 		self.statusCurrent = 0
 		self.statusPower = 0
 		self.statusStateOfCharge = 0
 		self.statusTimeRemaining = 0
 		self.statusConsumedAh = 0
-		self.pollRate = 0.1
+		self.pollRate = 0.05
+		self.pollCommands = [0xED8D,0xED8F,0xED8E,0xEEFF,0x0FFF,0x0FFE]
+		self.pollIndex = 0
 		self.lastPoll = time.time()
 	def update(self):
 		if self.open:
 			try:
 				# Handle sending of poll serial commands
+				# send only one poll at a time
+				# When we poll every data point at once, things get clogged.
 				if time.time() - self.lastPoll > self.pollRate:
 					self.lastPoll = time.time()
-					self.port.write(self.encodeGetCommand(0xED8D))
-					self.port.write(self.encodeGetCommand(0xED8F))
-					self.port.write(self.encodeGetCommand(0xED8E))
-					self.port.write(self.encodeGetCommand(0xEEFF))
-					self.port.write(self.encodeGetCommand(0x0FFF))
-					self.port.write(self.encodeGetCommand(0x0FFE))
+
+					self.port.write(self.encodeGetCommand(self.pollCommands[self.pollIndex]))
+					self.pollIndex = self.pollIndex + 1
+					if (self.pollIndex >= len(self.pollCommands)):
+						self.pollIndex = 0
 
 				# Read serial data in.
 				waitingBytes = self.port.in_waiting
@@ -57,20 +59,10 @@ class VictronDevice(GenericSerialDevice):
 		commandArray = []
 		checksumArray = []
 		idBytes = id_hex.to_bytes(2, 'little')
-
-		checksumArray.append(0x7)
-		checksumArray.append(idBytes[0])
-		checksumArray.append(idBytes[1])
-		checksumArray.append(0x0)
-
-		checksum = 0x55
-		for byte in checksumArray:
-			checksum = (checksum - byte) % 256
-
+		checksum = (0x55 - 0x7 - idBytes[0] - idBytes[1] - 0x0) % 256
 		commandString = ":7{0:02X}{1:02X}00{2:02X}\n".format(idBytes[0],idBytes[1],checksum)
 		return bytes(commandString,"utf-8")
 	def decodeGetCommand(self,rawLine):
-		#print(rawLine)
 		if len(rawLine) == 0 or rawLine[0] != ":":
 			return
 		if rawLine[1] != "7":

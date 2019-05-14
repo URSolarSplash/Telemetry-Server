@@ -1,5 +1,5 @@
 
-# Class representing an alarm
+# Class representing a range-based alarm
 class Alarm(dict):
 	def __init__(self,key,desc,min,max):
 		dict.__init__(self,key=key,desc=desc,value=0,range_min=min,range_max=max,state=False)

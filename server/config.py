@@ -27,6 +27,7 @@ dataKeys = [
     "gpsLongitude",
     "gpsHeading",
     "gpsSpeedKnots",
+    "gpsSpeedMph",
     "throttle",
     "throttleInput",
     "throttleCurrentTarget",
@@ -44,7 +45,8 @@ alarmThresholds = {
     'alarmCurrentRange' : Alarm("batteryCurrent","Battery Over/Under Current",-20,100),
     'alarmStateOfCharge' : Alarm("batteryStateOfCharge","Battery Drain",50,100),
     'alarmMotorTemp' : Alarm("motorTemp","Motor Over/Under Temperature",50,150),
-    'alarmMotorOverspeed' : Alarm("motorRpm","Motor Over Speed",0,3600)
+    'alarmMotorOverspeed' : Alarm("motorRpm","Motor Over Speed",0,3600),
+    'alarmFullThrottle' : Alarm("throttle","FULL THROTTLE",0,254)
 }
 
 # Blacklist for serial ports
@@ -66,7 +68,7 @@ dbFile = "test1.db"
 dbTablePrefix = "dataSession"
 
 # Whether to erase the database on start
-dbEraseOnStart = True
+dbEraseOnStart = False
 
 # Debug: Ignore all devices, don't connect to anything
 ignoreDevices = False
@@ -75,7 +77,7 @@ ignoreDevices = False
 pollRate = 0
 
 # Interval at which devices are scanned
-scanRate = 1
+scanRate = 1.1 # offset so scan doesn't always happen at same time as database saving
 
 # Interval at which data is saved to database
 saveRate = 1
@@ -88,7 +90,6 @@ httpPort = 5000
 
 # Whether to log http requests
 httpLogging = False
-
 
 #--- Control Algorithms Configuration ---
 # Control algorithms can set telemetry data points based on other data points.

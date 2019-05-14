@@ -24,11 +24,11 @@ class RadioManager():
             statistics.stats["hasRadio"] =  False
             print("[Radio] No detected serial telemetry device.")
     def write(self,dataName, dataValue):
-        # Writes a data point update to the radio stream
-        dataString= "{0}:{1}\n".format(dataName,dataValue)
-        #print("[Radio] writing data update string "+dataString)
+        # Writes a data point update to the radio stream if radio is active
         if self.mode == 1:
-            self.serialPortWrite.write(dataString)
+            #print("[Radio] writing data update string "+dataString)
+            dataString= "{0}:{1}\n".format(dataName,dataValue)
+            self.serialPortWrite.write(bytes(dataString,"utf-8"))
     def shutdown(self):
         try:
             self.serialPortWrite.close()

@@ -77,28 +77,36 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				# Packet 1/2
 				imuPitch = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
 				imuRoll = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
-				gpsNumSatellites = packet[9]
-				gpsFix = packet[10]
+				gpsFix = packet[9]
+				gpsNumSatellites = packet[10]
+				gpsHeading = (packet[11]/255.0)*360.0
 				self.cache.set("imuPitch",imuPitch)
 				self.cache.set("imuRoll",imuRoll)
 				self.cache.set("gpsFix",gpsFix)
-				self.cache.set("gpsNumSatellites",gpsNumSatellites)
+				# Only save GPS data points if we have a GPS fix.
+				if (gpsFix):
+					self.cache.set("gpsNumSatellites",gpsNumSatellites)
+					self.cache.set("gpsHeading",gpsHeading)
 			elif (packet[14] == 1):
 				# Packet 2/2
 				latitude = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
 				longitude = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
 				speedKnots = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
-				heading = (packet[13]/255.0)*360.0
-				self.cache.set("gpsLatitude",latitude)
-				self.cache.set("gpsLongitude",longitude)
-				self.cache.set("gpsSpeedKnots",speedKnots)
-				self.cache.set("gpsHeading",heading)
+				gpsFix = packet[13]
+				self.cache.set("gpsFix",gpsFix)
+				# Only save GPS data points if we have a GPS fix.
+				if (gpsFix):
+					self.cache.set("gpsLatitude",latitude)
+					self.cache.set("gpsLongitude",longitude)
+					self.cache.set("gpsSpeedKnots",speedKnots)
+					KNOTS_TO_MPH = 1.15078
+					self.cache.set("gpsSpeedMph",speedKnots * KNOTS_TO_MPH)
 			else:
-				print("[Telemetry Node] GPS IMU board invalid packet state!")
 				statistics.stats["numDroppedNodePackets"] += 1
 		elif (self.deviceId == DEVICE_THROTTLE):
-			#print("Got throttle value")
-			self.cache.set("throttleInput",packet[2] << 8 | packet[1])
+			throttleValue = packet[2] << 8 | packet[1]
+			print("throttle:" + str(throttleValue))
+			self.cache.set("throttleInput",throttleValue)
 
 	def sendHeartbeat(self):
 		packet = [0] * 16
@@ -191,7 +199,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 					print('[Telemetry Node] dropped packet!')
 					self.state = STATE_CONNECTED_CONFIRMED
 		except Exception as e:
-			print("Error from telemetry node device:")
+			print("DEBUG - Error from telemetry node device:")
 			print(e)
 			traceback.print_tb(e.__traceback__)
 			self.close()
@@ -203,6 +211,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 		checksumValue = self.getChecksum(packet)
 		#print(checksumValue)
 		if (checksumValue == 255):
+			#print("[Telemetry Node] Got valid packet, reading...")
 			self.unpack(packet)
 		else:
 			print("[Telemetry Node] Packet failed checksum. Packet fropped! checksum value = "+str(checksumValue))

@@ -1,21 +1,25 @@
 from .GenericSerialDevice import GenericSerialDevice
 import pyvesc
 import json
+import time
 
 class VescDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(VescDevice, self).__init__(cache, portName, 115200)
 		self.throttleOutEnable = False
+		self.lastWrite = time.time()
+		self.writeRate = 0.1
 	def update(self):
 		if self.open:
 			try:
-				self.writeData()
+				if (time.time() - self.lastWrite > self.writeRate):
+					self.writeData()
 
 				if self.port.in_waiting >= 62:
 					# Check for new vesc message in the buffer
 					(vescMessage, consumed) = pyvesc.decode(self.port.read(61))
-					print(vescMessage)
-					print(consumed)
+					#print(vescMessage)
+					#print(consumed)
 					if vescMessage:
 						#print(str(vescMessage))
 						self.cache.set("controllerTemp",float(vescMessage.temp_pcb))
