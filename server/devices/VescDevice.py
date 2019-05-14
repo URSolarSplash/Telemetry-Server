@@ -13,6 +13,7 @@ class VescDevice(GenericSerialDevice):
 		if self.open:
 			try:
 				if (time.time() - self.lastWrite > self.writeRate):
+					self.lastWrite = time.time()
 					self.writeData()
 
 				if self.port.in_waiting >= 62:
@@ -43,6 +44,6 @@ class VescDevice(GenericSerialDevice):
 				self.throttleOutEnable = True
 			throttle = 0
 		throttleMessage = pyvesc.SetDutyCycle(int(throttle))
-		#self.port.write(pyvesc.encode(throttleMessage))
+		self.port.write(pyvesc.encode(throttleMessage))
 		# Write value request
-		self.port.write(pyvesc.encode_request(pyvesc.GetValues))
+		# self.port.write(pyvesc.encode_request(pyvesc.GetValues))

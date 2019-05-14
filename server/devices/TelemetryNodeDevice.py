@@ -22,6 +22,8 @@ DEVICE_BATTERY_BOARD = 0x03
 DEVICE_GPS_IMU = 0x04
 DEVICE_THROTTLE = 0x05
 
+HEARTBEAT_INTERVAL = 100
+
 #TelemetryNode implementing URSS telemetry protocol
 class TelemetryNodeDevice(GenericSerialDevice):
 	def __init__(self,cache,portName):
@@ -65,8 +67,8 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			self.cache.set("vescFault",packet[10])
 		elif (self.deviceId == DEVICE_MOTOR_BOARD):
 			motorTemp = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
-			motorRpm = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
-			propRpm = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
+			motorRpm = (packet[8] << 24 | packet[7] << 16 | packet[6] << 8 | packet[5])
+			propRpm = (packet[12] << 24 | packet[11] << 16 | packet[10] << 8 | packet[9])
 			self.cache.set("motorTemp",motorTemp)
 			self.cache.set("motorRpm",motorRpm)
 			self.cache.set("propRpm",propRpm)
@@ -105,8 +107,8 @@ class TelemetryNodeDevice(GenericSerialDevice):
 				statistics.stats["numDroppedNodePackets"] += 1
 		elif (self.deviceId == DEVICE_THROTTLE):
 			throttleValue = packet[2] << 8 | packet[1]
-			print("throttle:" + str(throttleValue))
 			self.cache.set("throttleInput",throttleValue)
+			#print("got throttle at : "+str(time.time()))
 
 	def sendHeartbeat(self):
 		packet = [0] * 16
@@ -171,7 +173,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			# Device is connected and receiving data
 			elif (self.state == STATE_CONNECTED_CONFIRMED):
 				# Every 250 ms, send a heartbeat pulse.
-				if (self.millis() - self.lastPulse >= 250):
+				if (self.millis() - self.lastPulse >= HEARTBEAT_INTERVAL):
 					self.sendHeartbeat()
 					self.lastPulse = self.millis()
 
@@ -199,9 +201,9 @@ class TelemetryNodeDevice(GenericSerialDevice):
 					print('[Telemetry Node] dropped packet!')
 					self.state = STATE_CONNECTED_CONFIRMED
 		except Exception as e:
-			print("DEBUG - Error from telemetry node device:")
-			print(e)
-			traceback.print_tb(e.__traceback__)
+			#print("DEBUG - Error from telemetry node device:")
+			print("[Telemetry Node] Error: "+str(e))
+			#traceback.print_tb(e.__traceback__)
 			self.close()
 	def readPacket(self):
 		packet = [0] * 16

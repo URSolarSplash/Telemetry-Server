@@ -37,6 +37,7 @@ class ControlAlgorithms:
         # Inputs: Throttle cutoff - Value of user throttle potentiometer
         #         Limiter setting - Target amperage from user limiter potentiometer
         #         Throttle mode - Manual / auto based on user input
+        self.cache.set("throttleMode",0)
         if self.cache.getNumerical("throttleMode",0) == 0:
             # Mode 0 - Manual Throttle
             # Just set output throttle to the throttle cutoff value.
@@ -45,7 +46,7 @@ class ControlAlgorithms:
             # Mode 1 - Current limiting throttle
             throttleInput = self.cache.getNumerical("throttleInput",0)
             throttleOutput = self.cache.getNumerical("throttle",0)
-            currentInput = self.cache.getNumerical("bmvCurrent",0)
+            currentInput = self.cache.getNumerical("batteryCurrent",0)
 
             # Map throttle input to a current value
             self.cache.set("throttleCurrentTarget",throttleInput * -0.6)
@@ -57,7 +58,7 @@ class ControlAlgorithms:
 
             self.throttlePid.setpoint = goalCurrent
             pidOut = self.throttlePid(currentInput)
-            print("PID delta = "+str(pidOut))
+            #print("PID delta = "+str(pidOut))
             throttle = throttleOutput +pidOut
             #print("PID output = "+str(throttle))
 

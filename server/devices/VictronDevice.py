@@ -22,7 +22,7 @@ class VictronDevice(GenericSerialDevice):
 		self.statusTimeRemaining = 0
 		self.statusConsumedAh = 0
 		self.pollRate = 0.05
-		self.pollCommands = [0xED8D,0xED8F,0xED8E,0xEEFF,0x0FFF,0x0FFE]
+		self.pollCommands = [0xED8D,0xED8C,0xED8E,0xEEFF,0x0FFF,0x0FFE]
 		self.pollIndex = 0
 		self.lastPoll = time.time()
 	def update(self):
@@ -77,8 +77,10 @@ class VictronDevice(GenericSerialDevice):
 			dataValue = twos_complement(dataBytes[4]+dataBytes[3],16)
 			self.statusVoltage=dataValue / 100
 			self.cache.set("batteryVoltage",self.statusVoltage)
-		elif dataId == 0xED8F:
-			dataValue = twos_complement(dataBytes[4]+dataBytes[3],16)
+		elif dataId == 0xED8C:
+			#dataValue = twos_complement(dataBytes[4]+dataBytes[3],16)
+			#self.statusCurrent = dataValue / 10
+			dataValue = twos_complement(dataBytes[6]+dataBytes[5]+dataBytes[4]+dataBytes[3],32)
 			self.statusCurrent = dataValue / 1000
 			self.cache.set("batteryCurrent",self.statusCurrent)
 		elif dataId == 0xED8E:

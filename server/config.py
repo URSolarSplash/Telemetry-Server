@@ -98,7 +98,7 @@ httpLogging = False
 isSlave = False
 
 # Interval at which control algorithms are updated, if relevant
-controlAlgorithmUpdateRate = 0.05
+controlAlgorithmUpdateRate = 0.01
 
 # Control algorithm which saves some mock data for testing
 controlAlgorithmMockData = False
