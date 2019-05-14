@@ -187,13 +187,10 @@ class TelemetryNodeDevice(GenericSerialDevice):
 					self.lastPulse = self.millis()
 
 				# If data is received, read and handle the packet.
-				if (self.port.in_waiting != 0):
+				while (self.port.in_waiting != 0):
 					#print("Bytes waiting: "+str(self.port.in_waiting))
 					# Read until we get a start byte
 					byte = ord(self.port.read(1))
-					while (byte != 0xF0 and self.port.in_waiting > 0):
-						print("Purging invalid bytes: "+str(hex(byte)))
-						byte = ord(self.port.read(1))
 					if (byte == 0xF0):
 						self.lastResponse = self.millis()
 						if(self.port.in_waiting >= 15):
@@ -201,10 +198,17 @@ class TelemetryNodeDevice(GenericSerialDevice):
 						else:
 							# We haven't received the entire packet. Switch states and wait for packet to come.
 							self.state = STATE_CONNECTED_RECEIVING
+					else:
+						print("Purging invalid bytes: "+str(hex(byte)))
+						byte = ord(self.port.read(1))
+
+
 				if (self.millis() - self.lastResponse > 1000):
 					self.state = STATE_UNCONNECTED
 					print('[Telemetry Node] Node timed out, reset to STATE_UNCONNECTED')
 					print("Last seen at: "+str(self.lastResponse)+" which was "+str(self.millis() - self.lastResponse)+"ms ago")
+				else:
+					print("Check for Disconnect: OK")
 					#sys.exit()
 			elif (self.state == STATE_CONNECTED_RECEIVING):
 				# Waiting for 15 packets so we can read.
