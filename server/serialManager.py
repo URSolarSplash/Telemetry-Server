@@ -135,8 +135,13 @@ class SerialManager:
 		else:
 			self.lastPoll = time.time()
 
+		#print("Starting device polling...")
+
 		# Get data from our active device list
 		for device in self.devices:
 			#print("[Serial Manager] - polling "+device.portName)
 			if (device.isOpen()):
-				 device.update()
+				#print("Starting device update for "+device.portName)
+				device.update()
+				#print("Finished device update for "+device.portName)
+		#print("Finished device polling.")
