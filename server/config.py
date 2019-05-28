@@ -32,6 +32,7 @@ dataKeys = [
     "throttleInput",
     "throttleCurrentTarget",
     "throttleMode",
+    "throttleRecommendation",
     "solarChargerCurrent1",
     "solarChargerCurrent2",
     "solarChargerCurrentTotal",

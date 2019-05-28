@@ -88,12 +88,13 @@ class DataCache:
             return None
     def getNumerical(self, name, default):
         # Get a data point's value if it exists
-        # If it doesn't exist, return a default value
+        # If it doesn't have a value, return a default value
+        # If it doesn't exist, also return a default value
         if name in self.values:
             return self.values[name].getNumerical(default)
         else:
             print("[Tried to get invalid key [{0}]]".format(name))
-            return None
+            return default
     def getMin(self, name):
         # Get a data point's min value if it exists
         # If it doesn't exist, return a null value
