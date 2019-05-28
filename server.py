@@ -25,7 +25,7 @@ def unpack(packet):
 		throt = 125
 		txPacket[1] = throt & 0xFF
 		txPacket[2] = (throt & 0xFF) >> 8
-		txPacket[15] = generateChecksum(txPacket)
+		txPacket[15] = encodeChecksum(txPacket)
 		conn.write(bytearray(txPacket))
 
 	elif(deviceID == 0x01):
@@ -56,7 +56,7 @@ while True:
 			for i in range(1,16):
 				rxPacket[i] = ord(conn.read())
 			#print(rxPacket)
-			if(isValid(rxPacket)):
+			if(decodeChecksum(rxPacket) == 255):
 				unpack(rxPacket)
 			else:
 				print("Dropped Packet")

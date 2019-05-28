@@ -6,7 +6,7 @@ import atexit
 import platform
 import re
 import server.config as config
-from server.devices.TelemetryNodeDevice import *
+from server.devices.StatelessTelemetryNodeDevice import *
 from server.devices.RadioDevice import *
 from server.devices.TelemetryNodeDevice import *
 from server.devices.VictronDevice import *
@@ -113,7 +113,7 @@ class SerialManager:
 				deviceInstance = VescDevice(self.cache,portId)
 			else:
 				print("[Serial Manager] Detected Device Type: Default Telemetry")
-				deviceInstance = TelemetryNodeDevice(self.cache,portId)
+				deviceInstance = StatelessTelemetryNodeDevice(self.cache,portId)
 
 			# Add newly opened device to the list
 			self.devices.append(deviceInstance)
