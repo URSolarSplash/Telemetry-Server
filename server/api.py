@@ -28,6 +28,7 @@ def liveData():
 		status=200,
 		mimetype='application/json'
 	)
+	response.headers.add('Access-Control-Allow-Origin', '*')
 	return response
 
 @app.route('/alarms',methods=['GET'])
@@ -43,6 +44,7 @@ def liveAlarms():
 		status=200,
 		mimetype='application/json'
 	)
+	response.headers.add('Access-Control-Allow-Origin', '*')
 	return response
 
 @app.route('/stats',methods=['GET'])
@@ -61,6 +63,7 @@ def liveStats():
 		status=200,
 		mimetype='application/json'
 	)
+	response.headers.add('Access-Control-Allow-Origin', '*')
 	return response
 
 # Returns all sessions

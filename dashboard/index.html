@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Page Metadata -->
+        <meta charset="UTF-8">
+        <title>URSS Telemetry Monitor</title>
+
+        <!-- Load CSS Files -->
+        <link rel="stylesheet" type="text/css" href="static/css/main.css">
+        <link rel="stylesheet" type="text/css" href="static/css/dashboard.css">
+        <link rel="stylesheet" type="text/css" href="static/css/lib/epoch.css">
+
+        <!-- Load JS Libraries -->
+        <!--<script>window.$ = window.jQuery = require('jquery');</script>-->
+        <!--<script src="static/js/lib/dragscroll.js" type="text/javascript"></script>-->
+        <!--<script src="static/js/lib/Chart.bundle.js"></script>-->
+        <!--<script type="text/javascript" src="static/js/lib/chartjs-plugin-streaming.js"></script>-->
+        <script src="static/js/lib/d3.min.js"></script>
+        <script src="static/js/lib/jquery-3.4.1.min.js"></script>
+        <script src="static/js/lib/epoch.js"></script>
+        <script src="static/js/lib/epoch-data.js"></script>
+        <script src="static/js/modal.js" type="text/javascript"></script>
+
+        <!-- Load JS Page Files -->
+        <script src="static/js/Telemetry-Server.js" type="text/javascript"></script>
+        <script src="index.js" type="text/javascript"></script>
+    </head>
+
+    <body class="epoch-theme-dark">
+        <!-- Modal overlay; used to display simple modal messages. -->
+        <div id="modal-overlay">
+            <div id="modal-window">
+                <h1 id="modal-title">Message Title</h1>
+                <hr>
+                <p id="modal-body">Message Body</p>
+            </div>
+        </div>
+
+        <div id="dashboard-scaleable-wrapper">
+            <div id="dashboard-canvas">
+                <div id="urss-header-avatar"></div>
+
+                <div class="gaugeBg" style="top: 10px; left: 210px; width: 280px; height: 230px;">
+                    <h2>Throttle</h2>
+                    <div id="gaugeChartThrottle" class="gauge epoch gauge-medium"></div>
+                </div>
+                <div class="dashboardIndicator dashboardGaugeIndicator" style="top:240px; left: 210px; width: 280px; height: 40px;">
+                    <span>min: <span id="telemetry.throttle.min">---</span></span>
+                    <span>max: <span id="telemetry.throttle.max">---</span></span>
+                </div>
+
+                <div class="gaugeBg" style="top: 10px; left: 500px; width: 280px; height: 230px;">
+                    <h2>GPS Speed</h2>
+                    <div id="gaugeChartSpeed" class="gauge epoch gauge-medium"></div>
+                </div>
+                <div class="dashboardIndicator dashboardGaugeIndicator" style="top:240px; left: 500px; width: 280px; height: 40px;">
+                    <span>min: <span id="telemetry.gpsSpeedMph.min">---</span></span>
+                    <span>max: <span id="telemetry.gpsSpeedMph.max">---</span></span>
+                </div>
+
+                <div class="gaugeBg" style="top: 290px; left: 500px; width: 280px; height: 230px;">
+                    <h2>Motor RPM</h2>
+                    <div id="gaugeChartRpm" class="gauge epoch gauge-medium"></div>
+                </div>
+                <div class="dashboardIndicator dashboardGaugeIndicator" style="top:510px; left: 500px; width: 280px; height: 40px;">
+                    <span>min: <span id="telemetry.motorRpm.min">---</span></span>
+                    <span>max: <span id="telemetry.motorRpm.max">---</span></span>
+                </div>
+
+                <div class="dashboardIndicator" style="top:560px; left: 500px; width: 280px;">
+                    <h3>Prop RPM</h3>
+                    <h1><span id="telemetry.propRpm">---</span> rpm</h1>
+                    <span>min: <span id="telemetry.propRpm.min">---</span></span>
+                    <span>max: <span id="telemetry.propRpm.max">---</span></span>
+                </div>
+
+
+                <div class="gaugeBg" style="top: 10px; left: 790px; width: 280px; height: 230px;">
+                    <h2>Total Current</h2>
+                    <div id="gaugeChartCurrent" class="gauge epoch gauge-medium"></div>
+                </div>
+                <div class="dashboardIndicator dashboardGaugeIndicator" style="top:240px; left: 790px; width: 280px; height: 40px;">
+                    <span>min: <span id="telemetry.batteryCurrent.min">---</span></span>
+                    <span>max: <span id="telemetry.batteryCurrent.max">---</span></span>
+                </div>
+
+                <div class="subsectionBg" style="top: 290px; left: 210px; width: 280px; height: 380px;">
+                    <h2>Throttle</h2>
+                    <div class="dashboardIndicator" style="top:45px; height: 40px;">
+                        <h3>Throttle Mode: <span id="telemetry.throttleMode">---</span></h3>
+                    </div>
+                    <div class="dashboardIndicator" style="top:90px;">
+                        <h3>Throttle Input</h3>
+                        <h1><span id="telemetry.throttleInput">---</span>%</h1>
+                    </div>
+                    <div class="dashboardIndicator" style="top:175px;">
+                        <h3>Throttle Current Target</h3>
+                        <h1><span id="telemetry.throttleCurrentTarget">---</span> A</h1>
+                    </div>
+                    <div id="throttleRecommendation" class="dashboardIndicator" style="top:260px; height: 120px;">
+                        <h3>Throttle Recommendation</h3>
+                        <h1><span id="telemetry.throttleRecommendation">---</span> A</h1>
+                    </div>
+                </div>
+
+                <div class="subsectionBg" style="top: 290px; left: 790px; width: 280px; height: 380px;">
+                    <h2>Solar Charging</h2>
+                    <div class="dashboardIndicator" style="top:46px;">
+                        <h3>Current (Panel 1)</h3>
+                        <h1><span id="telemetry.solarChargerCurrent1">---</span> A</h1>
+                    </div>
+                    <div class="dashboardIndicator" style="top:133px;">
+                        <h3>Current (Panel 2)</h3>
+                        <h1><span id="telemetry.solarChargerCurrent2">---</span> A</h1>
+                    </div>
+                    <div class="dashboardIndicator" style="top:220px;">
+                        <h3>Combined Output Current</h3>
+                        <h1><span id="telemetry.solarChargerCurrentTotal">---</span> A</h1>
+                    </div>
+                    <div class="dashboardIndicator" style="top:308px;">
+                        <i>Note: Negative Current/Power indicates power drain, Positive indicates power charge</i>
+                    </div>
+                </div>
+
+                <div id="alarmPanel" class="subsectionBg" style="top: 370px; right: 0px; width: 200px; height: 300px;">
+                    <span id="alarm-header">Alarms</span>
+                    <div id="alarm-container">
+                        <div class="alarm" id="alarm-alarmVoltageRange"></div>
+                        <div class="alarm" id="alarm-alarmCurrentRange"></div>
+                        <div class="alarm" id="alarm-alarmMotorTemp"></div>
+                        <div class="alarm" id="alarm-alarmFullThrottle"></div>
+                    </div>
+                </div>
+
+                <div class="dashboardIndicator" style="top:10px; right: 0px;">
+                    <h3>Voltage</h3>
+                    <h1><span id="telemetry.batteryVoltage">---</span> V</h1>
+                    <span>min: <span id="telemetry.batteryVoltage.min">---</span></span>
+                    <span>max: <span id="telemetry.batteryVoltage.max">---</span></span>
+                </div>
+                <div class="dashboardIndicator" style="top:130px; right: 0px;">
+                    <h3>Power</h3>
+                    <h1><span id="telemetry.batteryPower">---</span> W</h1>
+                    <span>min: <span id="telemetry.batteryPower.min">---</span></span>
+                    <span>max: <span id="telemetry.batteryPower.max">---</span></span>
+                </div>
+                <div class="dashboardIndicator" style="top:250px; right: 0px;">
+                    <h3>State of Charge</h3>
+                    <h1><span id="telemetry.batteryStateOfCharge">---</span> %</h1>
+                    <span>min: <span id="telemetry.batteryStateOfCharge.min">---</span></span>
+                    <span>max: <span id="telemetry.batteryStateOfCharge.max">---</span></span>
+                </div>
+
+
+
+                <div class="dashboardIndicator" style="top:10px;">
+                    <h3>Motor Temp</h3>
+                    <h1><span id="telemetry.motorTemp">---</span> C</h1>
+                    <span>min: <span id="telemetry.motorTemp.min">---</span></span>
+                    <span>max: <span id="telemetry.motorTemp.max">---</span></span>
+                </div>
+                <div class="dashboardIndicator" style="top:130px;">
+                    <h3>GPS Fix</h3>
+                    <h1><span id="telemetry.gpsFix">---</span></h1>
+                </div>
+                <div class="dashboardIndicator" style="top:250px;">
+                    <h3>GPS Num Satellites</h3>
+                    <h1><span id="telemetry.gpsNumSatellites">---</span></h1>
+                    <span>min: <span id="telemetry.gpsNumSatellites.min">---</span></span>
+                    <span>max: <span id="telemetry.gpsNumSatellites.max">---</span></span>
+                </div>
+                <div class="subsectionBg" style="top: 370px; left: 0px; width: 200px; height: 300px;">
+                    <h2>Trim</h2>
+                    <div id="gaugeChartTrim" class="gauge epoch gauge-small"></div>
+                    <div class="dashboardIndicator dashboardGaugeIndicator" style="top:190px; left: 0px; height: 150px; width: 200px;">
+                        <h3>IMU Pitch (Trim)</h3>
+                        <h1><span id="telemetry.imuPitch">---</span></h1>
+                        <span>min: <span id="telemetry.imuPitch.min">---</span></span>
+                        <span>max: <span id="telemetry.imuPitch.max">---</span></span>
+                    </div>
+                </div>
+                <div id="bottom-panel">
+                    <p id="status-messages">Status: No Messages</p>
+                    <p id="status-data">No Data Received</p>
+                    <p id="status-radio">No Radio Connection</p>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

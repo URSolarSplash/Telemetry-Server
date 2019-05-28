@@ -88,6 +88,9 @@ dataTimeOut = 5
 # Port for the HTTP interface
 httpPort = 5000
 
+# Port for the dashboard server
+dashboardHttpPort = 5001
+
 # Whether to log http requests
 httpLogging = False
 

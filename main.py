@@ -1,6 +1,7 @@
 # Main telemetry server file
 from server.data import *
 from server.controls import *
+from server.dashboard import DashboardManager
 from server.serialManager import SerialManager
 from server.radio import RadioManager
 from server.api import HTTPServerManager
@@ -36,6 +37,7 @@ database.resetTimestamp()
 serial = SerialManager(data)
 radio = RadioManager()
 server = HTTPServerManager(data)
+dashboard = DashboardManager()
 
 # Set up the radio mirroring
 # This uses the radio system to emit events when data is updated
@@ -71,3 +73,4 @@ except (KeyboardInterrupt, SystemExit):
 serial.shutdown()
 radio.shutdown()
 database.shutdown()
+dashboard.shutdown()
