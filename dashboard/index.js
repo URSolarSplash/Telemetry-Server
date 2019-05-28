@@ -72,7 +72,7 @@ $(function(){
 });
 
 Telemetry.addDataPointCallback("throttle",function(){
-    chartThrottle.update(Telemetry.get("throttle"));
+    chartThrottle.update((Telemetry.get("throttle")/255.0)*100.0);
 })
 
 Telemetry.addDataPointCallback("batteryCurrent",function(){
