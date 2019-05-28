@@ -10,6 +10,7 @@ from time import sleep
 from threading import Event
 import signal
 import os
+import time
 from os.path import expanduser
 
 print("[Main] Initializing Telemetry Server...")
@@ -66,6 +67,7 @@ try:
         # Update control algorithms
         if (not config.isSlave):
             controlAlgorithms.update()
+        #print(time.time())
 
 except (KeyboardInterrupt, SystemExit):
     print("\n[Main] Shutting down...")
