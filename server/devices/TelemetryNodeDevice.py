@@ -59,6 +59,7 @@ class TelemetryNodeDevice(GenericSerialDevice):
 			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
 			self.cache.set("alltraxFault",packet[10])
 		elif (self.deviceId == DEVICE_VESC):
+			#not used rn
 			self.cache.set("controllerTemp",(packet[2] << 8 | packet[1]))
 			self.cache.set("controllerInVoltage",(packet[4] << 8 | packet[3]))
 			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
