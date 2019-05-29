@@ -44,3 +44,4 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 `pip3 install flask`
 `pip3 install gevent`
 `pip3 install pynmea2`
+`sudo apt-get install libcurl4-openssl-dev`

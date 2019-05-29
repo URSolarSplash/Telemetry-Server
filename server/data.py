@@ -2,6 +2,7 @@ from time import time
 import server.config as config
 import server.statistics as statistics
 import sqlite3
+import math
 
 # Stores a single data point, which is a value that expires if it's too old.
 # - get(): gets the value, or None if value is >timeout seconds old.
@@ -15,6 +16,9 @@ class DataPoint:
         self.minValue = float("inf")
         self.maxValue = float("-inf")
     def set(self, newValue):
+        # Skip nan values
+        if math.isnan(newValue):
+            return
         self.value = newValue
         self.lastUpdated = time()
         if (self.value < self.minValue):
@@ -54,6 +58,9 @@ class DataCache:
     def __init__(self, keyList):
         # Create a dictionary of all data points with ID as a key
         self.values = {}
+        # Dictionary mapping values back to their indices
+        # Used for radio protocol
+        self.keyToIndexMap = {}
         self.keyList = sorted(keyList)
         self.radioMirror = None
 
@@ -63,8 +70,19 @@ class DataCache:
             self.alarms[alarmId].setCache(self)
 
         # Create blank data points based on key list
-        for key in self.keyList:
+        for i, key in enumerate(self.keyList):
             self.values[key] = DataPoint()
+            self.keyToIndexMap[key] = i
+    def keyToIndex(self, key):
+        try:
+            return self.keyToIndexMap[key]
+        except Exception:
+            return None
+    def indexToKey(self, index):
+        try:
+            return self.keyList[index]
+        except Exception:
+            return None
     def setRadioMirror(self, instance):
         self.radioMirror = instance
     def set(self, name, value):

@@ -21,7 +21,54 @@ def liveData():
 			jsonString += ",\n"
 		else:
 			jsonString +="\n"
-		jsonString += "  \"{0}\" : {{\"current\" : \"{1}\", \"min\" : \"{2}\", \"max\" : \"{3}\"}}".format(key,dataInstance.get(key),dataInstance.getMin(key),dataInstance.getMax(key))
+		currentValue = dataInstance.get(key)
+		minValue = dataInstance.getMin(key)
+		maxValue = dataInstance.getMax(key)
+		if (currentValue is None):
+			currentValue = "\"None\""
+		if (minValue is None):
+			minValue = "\"None\""
+		if (maxValue is None):
+			maxValue = "\"None\""
+		jsonString += "  \"{0}\" : {{\"current\" : {1}, \"min\" : {2}, \"max\" : {3}}}".format(key,currentValue,minValue,maxValue)
+	jsonString += "\n}"
+	response = app.response_class(
+		response=jsonString,
+		status=200,
+		mimetype='application/json'
+	)
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	return response
+
+@app.route('/live_formatted',methods=['GET'])
+def liveFormattedData():
+	jsonString = ""
+	jsonString += "{"
+	for i, key in enumerate(dataInstance.getKeys()):
+		if (i > 0):
+			jsonString += ",\n"
+		else:
+			jsonString +="\n"
+		currentValue = dataInstance.get(key)
+		currentValueNumerical = dataInstance.get(key)
+		minValue = dataInstance.getMin(key)
+		maxValue = dataInstance.getMax(key)
+		if (currentValueNumerical is None):
+			currentValueNumerical = 0
+		if (currentValue is None):
+			currentValue = "---"
+		else:
+			currentValue = "{0} {1}".format(round(currentValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
+		if (minValue is None):
+			minValue = "---"
+		else:
+			minValue = "{0} {1}".format(round(minValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
+		if (maxValue is None):
+			maxValue = "---"
+		else:
+			maxValue = "{0} {1}".format(round(maxValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
+		minMaxValue = "min: {0} max: {1}".format(minValue,maxValue)
+		jsonString += "  \"{0}\" : {{\"current\" : \"{1}\", \"min_max\" : \"{2}\", \"currentNum\" : {3}}}".format(key,currentValue,minMaxValue,currentValueNumerical)
 	jsonString += "\n}"
 	response = app.response_class(
 		response=jsonString,
@@ -49,6 +96,7 @@ def liveAlarms():
 
 @app.route('/stats',methods=['GET'])
 def liveStats():
+	statistics.stats["numDataKeys"] = len(config.dataKeys)
 	jsonString = ""
 	jsonString += "{"
 	for i, key in enumerate(statistics.stats.keys()):

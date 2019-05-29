@@ -1,41 +1,81 @@
 from server.alarms import *
 
 # Keys in the SQLite table
+# Please keep sorted alphabetically!
 dataKeys = [
-    "controllerTemp",
-    "controllerOutCurrent",
-    "controllerInCurrent",
-    "controllerDutyCycle",
-    "controllerRpm",
-    "controllerInVoltage",
-    "vescFault",
     "alltraxFault",
-    "batteryVoltage",
+    "batteryConsumedAh",
     "batteryCurrent",
     "batteryPower",
-    "batteryTimeRemaining",
-    "batteryConsumedAh",
     "batteryStateOfCharge",
-    "motorRpm",
-    "propRpm",
-    "motorTemp",
-    "imuPitch",
-    "imuRoll",
+    "batteryTimeRemaining",
+    "batteryVoltage",
+    "controllerDutyCycle",
+    "controllerInCurrent",
+    "controllerInVoltage",
+    "controllerOutCurrent",
+    "controllerRpm",
+    "controllerTemp",
     "gpsFix",
-    "gpsNumSatellites",
+    "gpsHeading",
     "gpsLatitude",
     "gpsLongitude",
-    "gpsHeading",
+    "gpsNumSatellites",
     "gpsSpeedKnots",
     "gpsSpeedMph",
-    "throttle",
-    "throttleInput",
-    "throttleCurrentTarget",
-    "throttleMode",
-    "throttleRecommendation",
+    "imuPitch",
+    "imuRoll",
+    "motorRpm",
+    "motorTemp",
+    "propRpm",
     "solarChargerCurrent1",
     "solarChargerCurrent2",
     "solarChargerCurrentTotal",
+    "throttle",
+    "throttleCurrentTarget",
+    "throttleInput",
+    "throttleMode",
+    "throttleRecommendation",
+    "vescFault"
+]
+
+# Defines formatting for the dashboard UI
+# rounding decimal places, units
+dataKeyFormat = [
+    [0,""],
+    [2,"Ah"],
+    [2,"A"],
+    [2,"W"],
+    [2,"%"],
+    [0,"min"],
+    [2,"V"],
+    [2,"%"],
+    [2,"A"],
+    [2,"V"],
+    [2,"A"],
+    [2,"rpm"],
+    [2,"C"],
+    [0,""],
+    [1,"deg"],
+    [2,""],
+    [2,""],
+    [0,""],
+    [2,"kt"],
+    [2,"mph"],
+    [2,"deg"],
+    [2,"deg"],
+    [2,"rpm"],
+    [2,"C"],
+    [2,"rpm"],
+    [2,"A"],
+    [2,"A"],
+    [2,"A"],
+    [0,""],
+    [2,"A"],
+    [0,""],
+    [0,""],
+    [2,"A"],
+    [0,""]
 ]
 
 # Defines a list of alarms
@@ -105,4 +145,4 @@ isSlave = False
 controlAlgorithmUpdateRate = 0.01
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = False
+controlAlgorithmMockData = True
