@@ -145,4 +145,4 @@ isSlave = False
 controlAlgorithmUpdateRate = 0.01
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = True
+controlAlgorithmMockData = False
