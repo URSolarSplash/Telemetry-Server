@@ -23,6 +23,7 @@
 
 #bottom-panel {
     border-radius: 10px;
+    overflow: hidden;
 }
 
 .dashboardIndicator {
