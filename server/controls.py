@@ -26,7 +26,7 @@ class ControlAlgorithms:
             self.cache.set("motorRpm",motorRpm)
             self.cache.set("propRpm",motorRpm*0.58)
             self.cache.set("gpsSpeedMph",motorRpm*0.008+random.random())
-            self.cache.set("throttleInput",50 + math.sin(time.time()/5.0)*50.0)
+            self.cache.set("throttleInput",128 + math.sin(time.time()/2.0)*128.0)
             self.cache.set("imuPitch",random.random()*10)
             #self.cache.set("throttleCutoff",50+math.sin(time.time()/5.0)*50)
             #self.cache.set("throttleCurrentTarget",-60)
