@@ -45,7 +45,7 @@ int main(void){
 
     InitWindow(screenWidth, screenHeight, "Telemetry Server Dashboard");
 
-    SetTargetFPS(60);
+    SetTargetFPS(10);
 
     Texture2D bg = LoadTexture("resources/bg.png");
     Texture2D offlineOverlay = LoadTexture("resources/telemetry-offline.png");
