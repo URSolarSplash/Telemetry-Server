@@ -15,18 +15,16 @@ class VescDevice(GenericSerialDevice):
 				if (time.time() - self.lastWrite > self.writeRate):
 					self.lastWrite = time.time()
 					self.writeData()
-
-				if self.port.in_waiting >= 62:
+				if self.port.in_waiting >= 71:
 					# Check for new vesc message in the buffer
-					(vescMessage, consumed) = pyvesc.decode(self.port.read(61))
-					#print(vescMessage)
-					#print(consumed)
+					(vescMessage, consumed) = pyvesc.decode(self.port.read(70))
 					if vescMessage:
-						#print(str(vescMessage))
-						self.cache.set("controllerTemp",float(vescMessage.temp_pcb))
-						self.cache.set("controllerInCurrent",float(vescMessage.current_in))
-						self.cache.set("controllerOutCurrent",float(vescMessage.current_motor))
-						self.cache.set("controllerDutyCycle",float(vescMessage.duty_now))
+						if(vescMessage.temp_motor_filtered > -40):
+							self.cache.set("motorTemp",float(vescMessage.temp_motor_filtered))
+						self.cache.set("controllerTemp",float(vescMessage.temp_fet_filtered))
+						self.cache.set("controllerInCurrent",float(vescMessage.avg_input_current))
+						self.cache.set("controllerOutCurrent",float(vescMessage.avg_motor_current))
+						self.cache.set("controllerDutyCycle",float(vescMessage.duty_cycle))
 						self.cache.set("controllerRpm",float(vescMessage.rpm))
 						self.cache.set("controllerInVoltage",float(vescMessage.v_in))
 						#self.cache.set("vescFault",int(vescMessage.mc_fault_code))
@@ -46,4 +44,4 @@ class VescDevice(GenericSerialDevice):
 		throttleMessage = pyvesc.SetDutyCycle(int(throttle))
 		self.port.write(pyvesc.encode(throttleMessage))
 		# Write value request
-		# self.port.write(pyvesc.encode_request(pyvesc.GetValues))
+		self.port.write(pyvesc.encode_request(pyvesc.GetValues))

@@ -56,7 +56,8 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			motorTemp = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
 			motorRpm = (packet[8] << 24 | packet[7] << 16 | packet[6] << 8 | packet[5])
 			propRpm = (packet[12] << 24 | packet[11] << 16 | packet[10] << 8 | packet[9])
-			self.cache.set("motorTemp",motorTemp)
+			if(motorTemp == motorTemp):
+				self.cache.set("motorTemp",motorTemp)
 			self.cache.set("motorRpm",motorRpm)
 			self.cache.set("propRpm",propRpm)
 		elif deviceId == DEVICE_GPS_IMU:
