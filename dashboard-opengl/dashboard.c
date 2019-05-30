@@ -93,7 +93,9 @@ int main(void){
 
                         if (currentValue->type == json_string) { strcpy(current[x],currentValue->u.string.ptr); }
                         if (minMaxValue->type == json_string) { strcpy(minmax[x],minMaxValue->u.string.ptr); }
+
                         if (numericalValue->type == json_double) { values[x]=numericalValue->u.dbl; }
+                        if (numericalValue->type == json_integer) { values[x]=numericalValue->u.integer; }
 
                         //json_value_free(valuesObject);
                     }
