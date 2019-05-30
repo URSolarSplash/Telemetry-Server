@@ -43,7 +43,7 @@ dashboard = DashboardManager()
 # Set up the radio mirroring
 # This uses the radio system to emit events when data is updated
 # Used for remote data collection etc...
-#data.setRadioMirror(radio)
+data.setRadioMirror(radio)
 
 # Set up control algorithms manager
 controlAlgorithms = ControlAlgorithms(data)
@@ -60,6 +60,9 @@ try:
         # Sends a packet which requests more data
         serial.pollDevices()
 
+        # Update radio communication
+        # Sends radio packets at a fixed rate
+        radio.update()
 
         # If the data cache has valid data, save into the database
         if data.hasValidData():

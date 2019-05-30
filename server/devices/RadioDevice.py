@@ -8,29 +8,25 @@ class RadioDevice(GenericSerialDevice):
 	def update(self):
 		if self.open:
 			try:
-				waitingBytes = self.port.in_waiting
-				if waitingBytes == 0:
-					return
-				for c in self.port.read(waitingBytes):
-					if c == ord(b'\n'):
-						bytesToString = "".join(map(chr, self.buffer));
-						rawLine = bytesToString.lstrip().rstrip()
+				while (self.port.in_waiting > 0):
+					self.buffer.append(ord(self.port.read(1)))
 
-						# DECODE:
-						# Todo replace protocol
-						# Extract variable name and value
-						dataArray = rawLine.split(':',1)
-						if (len(dataArray) == 2):
-							dataName = dataArray[0]
-							dataValues = float(dataArray[1])
-							self.cache.set(dataName,dataValues)
-							statistics.stats["numRadioPackets"] += 1
-							#print("[Radio] Received remote telemetry data {0}={1}".format(dataName,dataValues))
+				while (len(self.buffer) > 0 and self.buffer[0] != 0xF0):
+					self.buffer.pop(0)
 
-						# Clear buffer
-						self.buffer = []
-					else:
-						self.buffer.append(c)
+				if (len(self.buffer) >= 6):
+					packet = self.buffer[0:6]
+					self.buffer = self.buffer[6:]
+					packetHeader = packet[0]
+					dataId = packet[1]
+					data = packet[2:6]
+					dataValue = struct.unpack(">f", data)
+
+					key = self.cache.indexToKey(dataId)
+					if not key is None:
+						self.cache.set(dataName,dataValue)
+						statistics.stats["numRadioPackets"] += 1
 			except Exception as e:
-				traceback.print_exc()
-				self.close()
+				pass
+				#traceback.print_exc()
+				#self.close()
