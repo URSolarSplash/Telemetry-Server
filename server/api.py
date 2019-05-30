@@ -40,11 +40,18 @@ def liveData():
 	response.headers.add('Access-Control-Allow-Origin', '*')
 	return response
 
+@app.route('/stats_raw',methods=['GET'])
+def statsRaw():
+	return "test"
+
 @app.route('/live_formatted',methods=['GET'])
 def liveFormattedData():
 	jsonString = ""
 	jsonString += "{"
-	for i, key in enumerate(dataInstance.getKeys()):
+	for i, keyData in enumerate(config.dataKeys):
+		key = keyData[0]
+		keyDecimalPlaces = keyData[1]
+		keyUnits = keyData[2]
 		if (i > 0):
 			jsonString += ",\n"
 		else:
@@ -58,16 +65,25 @@ def liveFormattedData():
 		if (currentValue is None):
 			currentValue = "---"
 		else:
-			currentValue = "{0} {1}".format(round(currentValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
+			currentValue = round(currentValue,keyDecimalPlaces)
+			if (keyDecimalPlaces == 0):
+				currentValue = int(currentValue)
+			currentValue = "{0}{1}".format(currentValue,keyUnits)
 		if (minValue is None):
 			minValue = "---"
 		else:
-			minValue = "{0} {1}".format(round(minValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
+			minValue = round(minValue,keyDecimalPlaces)
+			if (keyDecimalPlaces == 0):
+				minValue = int(minValue)
+			minValue = "{0}{1}".format(minValue,keyUnits)
 		if (maxValue is None):
 			maxValue = "---"
 		else:
-			maxValue = "{0} {1}".format(round(maxValue,config.dataKeyFormat[i][0]),config.dataKeyFormat[i][1])
-		minMaxValue = "min: {0} max: {1}".format(minValue,maxValue)
+			maxValue = round(maxValue,keyDecimalPlaces)
+			if (keyDecimalPlaces == 0):
+				maxValue = int(maxValue)
+			maxValue = "{0}{1}".format(maxValue,keyUnits)
+		minMaxValue = "min: {0} / max: {1}".format(minValue,maxValue)
 		jsonString += "  \"{0}\" : {{\"current\" : \"{1}\", \"min_max\" : \"{2}\", \"currentNum\" : {3}}}".format(key,currentValue,minMaxValue,currentValueNumerical)
 	jsonString += "\n}"
 	response = app.response_class(

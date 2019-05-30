@@ -61,7 +61,7 @@ class DataCache:
         # Dictionary mapping values back to their indices
         # Used for radio protocol
         self.keyToIndexMap = {}
-        self.keyList = sorted(keyList)
+        self.keyList = keyList
         self.radioMirror = None
 
         # dict of alarms
@@ -70,7 +70,8 @@ class DataCache:
             self.alarms[alarmId].setCache(self)
 
         # Create blank data points based on key list
-        for i, key in enumerate(self.keyList):
+        for i, keyArray in enumerate(self.keyList):
+            key = keyArray[0]
             self.values[key] = DataPoint()
             self.keyToIndexMap[key] = i
     def keyToIndex(self, key):
@@ -80,7 +81,7 @@ class DataCache:
             return None
     def indexToKey(self, index):
         try:
-            return self.keyList[index]
+            return self.keyList[index][0]
         except Exception:
             return None
     def setRadioMirror(self, instance):

@@ -4,7 +4,7 @@
 #include "json.h"
 #include <sys/time.h>
 #include <math.h>
-#define DEG_TO_RAD (3.14159265 / 180)
+#define DEG_TO_RAD (3.14159265 / 180.0)
 
 long long millis() {
     struct timeval te;
@@ -15,9 +15,10 @@ long long millis() {
 
 void drawText(int x, int y, char *text, int size, int align);
 void drawDataPointWithMinMax(int x, int y, char *name,  int index);
-void drawLargeDial(int x, int y, int bottomVal, int topVal, int index);
+void drawLargeDial(int x, int y, int bottomVal, int topVal, int index, int size, int label);
 Font font;
 Color colorTextShadow;
+Color fgColor;
 
 int x1 = 105;
 int x2 = 350;
@@ -36,15 +37,15 @@ Texture2D gauge;
 int SAMPLE_INTERVAL = 250;
 
 char current[34][16];
-char minmax[34][32];
+char minmax[34][64  ];
 double values[34];
+char tempText[16];
 
 int main(void){
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
     InitWindow(screenWidth, screenHeight, "Telemetry Server Dashboard");
-
     SetTargetFPS(10);
 
     Texture2D bg = LoadTexture("resources/bg.png");
@@ -54,6 +55,7 @@ int main(void){
     GenTextureMipmaps(&font.texture);
 
     colorTextShadow = Fade(BLACK,0.2);
+    fgColor = (Color){ 68, 68, 68, 255 };
 
     startTime = millis();
 
@@ -146,6 +148,7 @@ int main(void){
         drawText(x4,515,"Combined Output Current",font_med,2);
         drawText(x4,515+25,current[27],font_xlarge,2);
 
+/*
         int mouseX = GetMouseX();
         int mouseY = GetMouseY();
         mouseX = mouseX * 2;
@@ -157,18 +160,21 @@ int main(void){
         drawText(mouseX + 10, mouseY + 10,mouseXStr,font_small,0);
         drawText(mouseX + 10, mouseY + 30,mouseYStr,font_small,0);
         //DrawCircle(mouseX,mouseY,10,RED);
-
+*/
         // draw data point values
 
         // draw indicators
-        drawLargeDial(x2,170,0,255,28);
+        drawLargeDial(x2,180,0,255,28,120,1); //throttle
         drawText(x2,170+80,minmax[28],font_small,2);
-        drawLargeDial(x3,170,0,255,19);
+        drawLargeDial(x3,180,0,25,19,120,1); //gps speed
         drawText(x3,170+80,minmax[19],font_small,2);
-        drawLargeDial(x3,450,0,255,22);
+        drawLargeDial(x3,445,0,3500,22,110,1); //rpm
         drawText(x3,450+61,minmax[22],font_small,2);
-        drawLargeDial(x4,170,0,255,2);
+        drawLargeDial(x4,180,200,-200,2,120,1); //motor current
         drawText(x4,170+80,minmax[2],font_small,2);
+        drawLargeDial(x1,505,-15,15,20,80,0); //imu pitch
+        drawText(x1,380,"Trim",font_large,2);
+
 
         // if telemetry offline, draw overlay
         if (!telemetryOnline){
@@ -192,16 +198,33 @@ void drawDataPointWithMinMax(int x, int y, char *name,  int index){
     drawText(x,y+80,minmax[index],font_xsmall,2);
 }
 
-void drawLargeDial(int x, int y, int bottomVal, int topVal, int index){
-    DrawTexturePro(gauge, (Rectangle){0,0,512,512}, (Rectangle){x-120,y-120,240,240}, (Vector2){0,0}, 0, WHITE);
-    drawText(x,y+20,current[index],font_med,2);
-    float angle = ((values[index] - topVal) * (180 - bottomVal) / (topVal - bottomVal) + 20) * DEG_TO_RAD;
-    float dist = 90;
-    int x1 = x + (cos(angle)*dist);
-    int y1 = y + (sin(angle)*dist);
-    DrawLineEx((Vector2){x,y},(Vector2){x1,y1},5,ORANGE);
-    DrawCircle(x,y,10,LIGHTGRAY);
+void drawLargeDial(int x, int y, int bottomVal, int topVal, int index, int size, int label){
+    DrawCircleSector((Vector2){x,y}, size, 75,285, 64, LIGHTGRAY);
+    DrawCircleSector((Vector2){x,y}, size-3, 75,285, 64, fgColor);
+    for (int i = 1; i < 10; i++){
+        int xx = x + (cos(((i*21) - 195) * DEG_TO_RAD)*(size-8));
+        int yy = y + (sin(((i*21) - 195) * DEG_TO_RAD)*(size-8));
+        DrawLineEx((Vector2){x,y},(Vector2){xx,yy},2,LIGHTGRAY);
+    }
+    DrawCircleSector((Vector2){x,y}, (size-20), 75,285, 64, fgColor);
+    DrawTriangle((Vector2){x,y},(Vector2){x-114,y+30},(Vector2){x+114,y+30}, fgColor);
+    //DrawRectangleV((Vector2){x-70,y+18},(Vector2){140,28}, BLACK);
 
+    sprintf(tempText,"%d",bottomVal);
+    DrawTextEx(font, tempText, (Vector2){x-(size-15),y+10}, font_small, 0, LIGHTGRAY);
+    sprintf(tempText,"%d",topVal);
+    DrawTextEx(font, tempText, (Vector2){-MeasureTextEx(font, tempText, font_small, 0).x + x+(size-15),y+10}, font_small, 0, LIGHTGRAY);
+    if (label != 0){
+        drawText(x,y+20,current[index],font_large,2);
+    }
+    float positionValue = (values[index] - bottomVal) * (1 - 0) / (topVal - bottomVal) + 0;
+    float angle = (210 * positionValue) - 15;
+    float dist = (size-30);
+    int x1 = x + (cos((angle - 180) * DEG_TO_RAD)*dist);
+    int y1 = y + (sin((angle - 180) * DEG_TO_RAD)*dist);
+    DrawLineEx((Vector2){x,y},(Vector2){x1,y1},5,ORANGE);
+    DrawCircle(x1,y1,2.5,ORANGE);
+    DrawCircle(x,y,size/12,LIGHTGRAY);
 }
 
 void drawText(int x, int y, char *text, int size, int align){
@@ -219,7 +242,7 @@ void drawText(int x, int y, char *text, int size, int align){
     }
     int shadowOffset = 2;
     if (IsMouseButtonDown(0)){
-        DrawLine(x-100,y,x+100,y, RED);
+        //DrawLine(x-100,y,x+100,y, RED);
     }
     DrawTextEx(font, text, (Vector2){offsetX + x +shadowOffset,y + shadowOffset}, size, 0, colorTextShadow);
     DrawTextEx(font, text, (Vector2){offsetX + x,y}, size, 0, WHITE);

@@ -19,15 +19,23 @@ class ControlAlgorithms:
             self.lastUpdate = time.time()
         if config.controlAlgorithmMockData:
             # Save mock data into the cache for a bunch of data points.
+
+
             self.cache.set("batteryVoltage",35.0+math.sin(time.time()/1000.0)*1.0+random.random())
-            self.cache.set("batteryCurrent",-(1.1*(self.cache.getNumerical("throttle",0))+random.random()))
+            self.cache.set("batteryCurrent",math.sin(time.time()/5.0) * 100.0)
             self.cache.set("batteryPower",self.cache.getNumerical("batteryVoltage",0)*self.cache.getNumerical("batteryCurrent",0))
             motorRpm = (1640.0+math.sin(time.time()/5.0)*1500.0)*((time.time() % 100)/100)
             self.cache.set("motorRpm",motorRpm)
             self.cache.set("propRpm",motorRpm*0.58)
             self.cache.set("gpsSpeedMph",motorRpm*0.008+random.random())
-            self.cache.set("throttleInput",128 + math.sin(time.time()/2.0)*128.0)
+            self.cache.set("throttleInput",127.5 + math.sin(time.time()/2.0)*127.5)
             self.cache.set("imuPitch",random.random()*10)
+            solarCurrent1 = 4.0 + (random.random()*0.05)
+            solarCurrent2 = 4.0 + (random.random()*0.05)
+            self.cache.set("solarChargerCurrent1",solarCurrent1)
+            self.cache.set("solarChargerCurrent2",solarCurrent2)
+            self.cache.set("solarChargerCurrentTotal",solarCurrent1 + solarCurrent2)
+            self.cache.set("batteryStateOfCharge",80 + math.sin(time.time()/50.0) * 20)
             #self.cache.set("throttleCutoff",50+math.sin(time.time()/5.0)*50)
             #self.cache.set("throttleCurrentTarget",-60)
             #if (self.cache.getNumerical("throttleCutoff",0) > 90):
