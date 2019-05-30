@@ -6,3 +6,6 @@
 
 # Run python telemetry server program
 python3 main.py
+
+# Run telemetry server UI
+#dashboard-opengl/dashboard_rpi
