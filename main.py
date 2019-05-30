@@ -36,14 +36,14 @@ database.resetTimestamp()
 # - Radio manager is responsible for radio-based data transmission to shore
 # - HTTPServerManager creates a lightweight interface to get the latest data via GET request.
 serial = SerialManager(data)
-radio = RadioManager()
+radio = RadioManager(data)
 server = HTTPServerManager(data)
 dashboard = DashboardManager()
 
 # Set up the radio mirroring
 # This uses the radio system to emit events when data is updated
 # Used for remote data collection etc...
-data.setRadioMirror(radio)
+#data.setRadioMirror(radio)
 
 # Set up control algorithms manager
 controlAlgorithms = ControlAlgorithms(data)
@@ -59,6 +59,7 @@ try:
         # Polls active devices that want new data
         # Sends a packet which requests more data
         serial.pollDevices()
+
 
         # If the data cache has valid data, save into the database
         if data.hasValidData():

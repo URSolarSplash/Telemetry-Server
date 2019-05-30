@@ -106,15 +106,15 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			packet[1] = (throt & 0xFF)
 			packet[2] = (throt & 0xFF) >> 8
 		elif deviceId == DEVICE_BATTERY_BOARD:
-			pass
+			return
 		elif deviceId == DEVICE_MOTOR_BOARD:
-			pass
+			return
 		elif deviceId == DEVICE_GPS_IMU:
-			pass
+			return
 		elif deviceId == DEVICE_THROTTLE:
-			pass
+			return
 		elif deviceId == DEVICE_SOLAR:
-			pass
+			return
 
 		# Generate checksum at the end of the packet, and write the packet to the serial stream.
 		packet[15] = self.encodeChecksum(packet)
@@ -149,7 +149,6 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 				else:
 					print("[Telemetry Node] Packet dropped!")
 					statistics.stats["numDroppedNodePackets"] += 1
-
 		except Exception as e:
 			print("[Stateless Telemetry Node] Error: "+str(e))
 			traceback.print_tb(e.__traceback__)

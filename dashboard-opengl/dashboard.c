@@ -5,6 +5,8 @@
 #include <sys/time.h>
 #include <math.h>
 #define DEG_TO_RAD (3.14159265 / 180.0)
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 long long millis() {
     struct timeval te;
@@ -220,6 +222,8 @@ void drawLargeDial(int x, int y, int bottomVal, int topVal, int index, int size,
         drawText(x,y+20,current[index],font_large,2);
     }
     float positionValue = (values[index] - bottomVal) * (1 - 0) / (topVal - bottomVal) + 0;
+    positionValue = MAX(positionValue,0);
+    positionValue = MIN(positionValue,1);
     float angle = (210 * positionValue) - 15;
     float dist = (size-30);
     int x1 = x + (cos((angle - 180) * DEG_TO_RAD)*dist);
