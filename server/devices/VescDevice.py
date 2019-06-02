@@ -18,7 +18,7 @@ class VescDevice(GenericSerialDevice):
 					# Check for new vesc message in the buffer
 					(vescMessage, consumed) = pyvesc.decode(self.port.read(70))
 					if vescMessage:
-						if(vescMessage.temp_motor_filtered > -40):
+						if (self.cache.getNumerical("boatConfig",0) == 0):
 							self.cache.set("motorTemp",float(vescMessage.temp_motor_filtered))
 						self.cache.set("controllerTemp",float(vescMessage.temp_fet_filtered))
 						self.cache.set("controllerInCurrent",float(vescMessage.avg_input_current))
