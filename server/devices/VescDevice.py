@@ -35,7 +35,11 @@ class VescDevice(GenericSerialDevice):
 		#Get the throttle value and write it to the vesc.
 		# Throttle duty cycle value range for vesc: -100,000 to 100,000
 		# Input throttle: 0 to 100
-		throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
+		# Only write a value if we are in endurance mode
+		if (self.cache.getNumerical('boatConfig',0) == 0):
+			throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
+		else:
+			throttle = 0
 		# disable throttle until it is turned down so we don't jerk hard
 		if not self.throttleOutEnable:
 			if throttle <= 5:

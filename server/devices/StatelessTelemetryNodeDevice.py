@@ -90,7 +90,13 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 					self.cache.set("gpsSpeedMph",speedKnots * KNOTS_TO_MPH)
 		elif deviceId == DEVICE_THROTTLE:
 			throttleValue = packet[2] << 8 | packet[1]
+			throttleEnabled = packet[3]
+			throttleMode = packet[4]
+			boatConfig = packet[5]
 			self.cache.set("throttleInput",throttleValue)
+			self.cache.set("throttleEnabled",throttleEnabled)
+			self.cache.set("throttleMode",throttleMode)
+			self.cache.set("boatConfig",boatConfig)
 		elif deviceId == DEVICE_SOLAR:
 			outCurrent_1 = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
 			outCurrent_2 = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
@@ -108,9 +114,14 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 
 		if deviceId == DEVICE_ALLTRAX:
 			# Write back the value of the throttle for the motor controller output
-			throttle = int(self.cache.getNumerical('throttle',0))
+			# Only write a value when we are in sprint mode
+			if (self.cache.getNumerical('boatConfig',0) == 1):
+				throttle = int(self.cache.getNumerical('throttle',0))
+			else:
+				throttle = 0
 			packet[1] = (throttle & 0xFF)
 			packet[2] = (throttle & 0xFF00) >> 8
+			packet[3] = int(self.cache.getNumerical('throttleEnabled',0))
 		elif deviceId == DEVICE_VESC:
 			return
 		elif deviceId == DEVICE_BATTERY_BOARD:

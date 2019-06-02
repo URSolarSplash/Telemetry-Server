@@ -48,30 +48,32 @@ class ControlAlgorithms:
         # Inputs: Throttle cutoff - Value of user throttle potentiometer
         #         Limiter setting - Target amperage from user limiter potentiometer
         #         Throttle mode - Manual / auto based on user input
-        self.cache.set("throttleMode",0)
-        if self.cache.getNumerical("throttleMode",0) == 0:
-            # Mode 0 - Manual Throttle
-            # Just set output throttle to the throttle cutoff value.
-            self.cache.set("throttle",self.cache.getNumerical("throttleInput",0))
+        if self.cache.getNumerical("throttleEnabled",0) == 0:
+            self.cache.set("throttle",0)
         else:
-            # Mode 1 - Current limiting throttle
-            throttleInput = self.cache.getNumerical("throttleInput",0)
-            throttleOutput = self.cache.getNumerical("throttle",0)
-            currentInput = self.cache.getNumerical("batteryCurrent",0)
+            if self.cache.getNumerical("throttleMode",0) == 0:
+                # Mode 0 - Manual Throttle
+                # Just set output throttle to the throttle cutoff value.
+                self.cache.set("throttle",self.cache.getNumerical("throttleInput",0))
+            else:
+                # Mode 1 - Current limiting throttle
+                throttleInput = self.cache.getNumerical("throttleInput",0)
+                throttleOutput = self.cache.getNumerical("throttle",0)
+                currentInput = self.cache.getNumerical("batteryCurrent",0)
 
-            # Map throttle input to a current value
-            self.cache.set("throttleCurrentTarget",throttleInput * -0.6)
-            goalCurrent = self.cache.getNumerical("throttleCurrentTarget",0)
+                # Map throttle input to a current value
+                self.cache.set("throttleCurrentTarget",(throttleInput / 255.0) * -60.0)
+                goalCurrent = self.cache.getNumerical("throttleCurrentTarget",0)
 
-            # Scale currents so positive = drawing current
-            currentInput = -currentInput;
-            goalCurrent = -goalCurrent;
+                # Scale currents so positive = drawing current
+                currentInput = -currentInput;
+                goalCurrent = -goalCurrent;
 
-            self.throttlePid.setpoint = goalCurrent
-            pidOut = self.throttlePid(currentInput)
-            #print("PID delta = "+str(pidOut))
-            throttle = throttleOutput +pidOut
-            #print("PID output = "+str(throttle))
+                self.throttlePid.setpoint = goalCurrent
+                pidOut = self.throttlePid(currentInput)
+                #print("PID delta = "+str(pidOut))
+                throttle = throttleOutput +pidOut
+                #print("PID output = "+str(throttle))
 
-            throttle = max(min(255,throttle),0)
-            self.cache.set("throttle",throttle)
+                throttle = max(min(255,throttle),0)
+                self.cache.set("throttle",throttle)
