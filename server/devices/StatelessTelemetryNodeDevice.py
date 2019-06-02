@@ -91,7 +91,12 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			throttleValue = packet[2] << 8 | packet[1]
 			self.cache.set("throttleInput",throttleValue)
 		elif deviceId == DEVICE_SOLAR:
-			pass
+			outCurrent_1 = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
+			outCurrent_2 = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
+			totalCurrent = struct.unpack(">f",bytes([packet[12],packet[11],packet[10],packet[9]]))[0]
+			self.cache.set("solarChargerCurrent1",outCurrent_1)
+			self.cache.set("solarChargerCurrent2",outCurrent_2)
+			self.cache.set("solarChargerCurrentTotal",totalCurrent)
 
 	# Handles sending a response packet to a device
 	# This provides the opportunity to feed back data to the nodes
@@ -104,7 +109,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			# Write back the value of the throttle for the motor controller output
 			throttle = int(self.cache.getNumerical('throttle',0))
 			packet[1] = (throt & 0xFF)
-			packet[2] = (throt & 0xFF) >> 8
+			packet[2] = (throt & 0xFF00) >> 8
 		elif deviceId == DEVICE_BATTERY_BOARD:
 			return
 		elif deviceId == DEVICE_MOTOR_BOARD:
