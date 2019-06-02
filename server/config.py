@@ -59,7 +59,9 @@ portBlacklist = [
     "/dev/cu.JBLCharge3-SPPDev-1",
     "/dev/cu.BIGJAMBOXbyJawbone-SPPD",
     "/dev/cu.Bluetooth-Incoming-Port",
-    "/dev/cu.BoseSoundSport-SPPDev"
+    "/dev/cu.BoseSoundSport-SPPDev",
+		"/dev/cu.BoseSoundSport-SPPDev-1",
+		"/dev/cu.BoseSoundSport-SPPDev-2"
 ]
 
 # Database path
