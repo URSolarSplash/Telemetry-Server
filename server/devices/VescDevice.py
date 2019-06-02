@@ -6,7 +6,6 @@ import time
 class VescDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
 		super(VescDevice, self).__init__(cache, portName, 115200)
-		self.throttleOutEnable = False
 		self.lastWrite = time.time()
 		self.writeRate = 0.1
 	def update(self):
@@ -40,11 +39,7 @@ class VescDevice(GenericSerialDevice):
 			throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
 		else:
 			throttle = 0
-		# disable throttle until it is turned down so we don't jerk hard
-		if not self.throttleOutEnable:
-			if throttle <= 5:
-				self.throttleOutEnable = True
-			throttle = 0
+
 		throttleMessage = pyvesc.SetDutyCycle(int(throttle))
 		self.port.write(pyvesc.encode(throttleMessage))
 		# Write value request

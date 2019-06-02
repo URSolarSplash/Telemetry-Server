@@ -38,11 +38,11 @@ Texture2D gauge;
 
 int SAMPLE_INTERVAL = 250;
 
-char current[34][16];
-char minmax[34][64  ];
-double values[34];
+char current[50][16];
+char minmax[50][64];
+double values[50];
 char tempText[16];
-char statusText[128];
+char statusText[256];
 
 int main(void){
     const int screenWidth = 1280;
@@ -63,7 +63,7 @@ int main(void){
     startTime = millis();
 
     // Initialize arrays
-    for (int i = 0; i < 34; i++){
+    for (int i = 0; i < 50; i++){
         strcpy(current[i],"---");
         strcpy(minmax[i],"min: --- max: ---");
     }
@@ -139,14 +139,24 @@ int main(void){
         drawDataPointWithMinMax(x5,130,"Power",3);
         drawDataPointWithMinMax(x5,253,"State of Charge",4);
 
-        drawText(x2,348,"Throttle Mode:",font_med,2);
-        drawText(x2+75,348,current[31],font_med,0);
-        drawText(x2,395,"Throttle Input",font_med,2);
-        drawText(x2,395+25,current[30],font_xlarge,2);
-        drawText(x2,475,"Throttle Current Target",font_med,2);
-        drawText(x2,475+25,current[29],font_xlarge,2);
-        drawText(x2,560,"Throttle Recommendation",font_med,2);
-        drawText(x2,560+25,current[32],font_xlarge,2);
+        if (values[31] == 0){
+            drawText(x2,348,"Throttle Mode: Duty Cycle",font_med,2);
+        } else {
+            drawText(x2,348,"Throttle Mode: Current",font_med,2);
+
+        }
+        if (values[34] == 0){
+            drawText(x2,392,"Boat Config: Endurance",font_med,2);
+        } else {
+            drawText(x2,392,"Boat Config: Sprint",font_med,2);
+
+        }
+        drawText(x2,438,"Throttle Input",font_med,2);
+        drawText(x2,438+25,current[30],font_xlarge,2);
+        drawText(x2,512,"Throttle Current Target",font_med,2);
+        drawText(x2,512+25,current[29],font_xlarge,2);
+        drawText(x2,590,"Throttle Recommendation",font_med,2);
+        drawText(x2,590+25,current[32],font_xlarge,2);
 
 
         drawText(x4,355,"Current (Panel 1)",font_med,2);
@@ -157,7 +167,6 @@ int main(void){
         drawText(x4,515+25,current[27],font_xlarge,2);
 
         DrawTextEx(font, statusText, (Vector2){1260-MeasureTextEx(font, statusText, font_med, 0).x,678}, font_med, 0, LIGHTGRAY);
-
 
 /*
         int mouseX = GetMouseX();
@@ -218,7 +227,7 @@ void drawLargeDial(int x, int y, int bottomVal, int topVal, int index, int size,
         DrawLineEx((Vector2){x,y},(Vector2){xx,yy},2,LIGHTGRAY);
     }
     DrawCircleSector((Vector2){x,y}, (size-20), 75,285, 64, (Color){ 68, 68, 68, 255 });
-    DrawTriangle((Vector2){x,y},(Vector2){x-114,y+30},(Vector2){x+114,y+30}, (Color){ 68, 68, 68, 255 });
+    DrawTriangle((Vector2){x,y},(Vector2){x-(size*0.8),y+30},(Vector2){x+(size*0.8),y+30}, (Color){ 68, 68, 68, 255 });
     //DrawRectangleV((Vector2){x-70,y+18},(Vector2){140,28}, BLACK);
 
     sprintf(tempText,"%d",bottomVal);
@@ -254,9 +263,6 @@ void drawText(int x, int y, char *text, int size, int align){
         offsetX = -width/2;
     }
     int shadowOffset = 2;
-    if (IsMouseButtonDown(0)){
-        //DrawLine(x-100,y,x+100,y, RED);
-    }
     DrawTextEx(font, text, (Vector2){offsetX + x +shadowOffset,y + shadowOffset}, size, 0, colorTextShadow);
     DrawTextEx(font, text, (Vector2){offsetX + x,y}, size, 0, WHITE);
 }

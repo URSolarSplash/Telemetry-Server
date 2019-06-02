@@ -91,6 +91,22 @@ Telemetry.addDataPointCallback("imuPitch",function(){
     chartTrim.update(Telemetry.get("imuPitch"));
 })
 
+Telemetry.addDataPointCallback("boatConfig",function(){
+    if (Telemetry.get("boatConfig") == 0) {
+        $("#boatConfigType").text("Endurance");
+    } else {
+        $("#boatConfigType").text("Sprint");
+    }
+})
+
+Telemetry.addDataPointCallback("throttleMode",function(){
+    if (Telemetry.get("throttleMode") == 0) {
+        $("#throttleModeType").text("Duty Cycle");
+    } else {
+        $("#throttleModeType").text("Current");
+    }
+})
+
 function doDashboardResize(){
     var scale = Math.min(
       $("#dashboard-scaleable-wrapper").outerWidth() / $("#dashboard-canvas").outerWidth(),

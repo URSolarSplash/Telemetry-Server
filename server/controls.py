@@ -12,6 +12,9 @@ class ControlAlgorithms:
         self.cache = cache
         self.lastUpdate = time.time()
         self.throttlePid = PID(1.5,0.1,0.0,setpoint=0)
+        self.prevBoatConfig = 0
+        self.prevThrottleMode = 0
+        self.throttleOutEnable = 0
     def update(self):
         if time.time() - self.lastUpdate < config.controlAlgorithmUpdateRate:
             return
@@ -48,8 +51,21 @@ class ControlAlgorithms:
         # Inputs: Throttle cutoff - Value of user throttle potentiometer
         #         Limiter setting - Target amperage from user limiter potentiometer
         #         Throttle mode - Manual / auto based on user input
+
+        # If we switch boat config or mode, require a throttle reset
+        newBoatConfig = self.cache.getNumerical("boatConfig",0)
+        if (self.prevBoatConfig != newBoatConfig):
+            self.prevBoatConfig = newBoatConfig
+            self.throttleOutEnable = False
+        newThrottleMode = self.cache.getNumerical("throttleMode",0)
+        if (self.prevThrottleMode != newThrottleMode):
+            self.prevThrottleMode = newThrottleMode
+            self.throttleOutEnable = False
+
+        # If dead man's switch is pulled, require a throttle reset
         if self.cache.getNumerical("throttleEnabled",0) == 0:
             self.cache.set("throttle",0)
+            self.throttleOutEnable = False
         else:
             if self.cache.getNumerical("throttleMode",0) == 0:
                 # Mode 0 - Manual Throttle
@@ -76,4 +92,9 @@ class ControlAlgorithms:
                 #print("PID output = "+str(throttle))
 
                 throttle = max(min(255,throttle),0)
-                self.cache.set("throttle",throttle)
+                self.cache.set("throttle",0) # DISABLED FOR SAFETY UNTIL WE BUILD ALGORITHM
+            # Handle any case where it's been deemed the throttle must be reset
+            if not self.throttleOutEnable:
+                if self.cache.getNumerical("throttle",0) <= 5:
+                    self.throttleOutEnable = True
+                self.cache.set("throttle",0)
