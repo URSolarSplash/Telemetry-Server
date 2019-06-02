@@ -14,7 +14,8 @@ import traceback
 # This all occurs at 10hz
 
 # Device ID Constants
-DEVICE_ALLTRAX = 0x01
+DEVICE_ALLTRAX = 0x00
+DEVICE_VESC =0x01
 DEVICE_MOTOR_BOARD = 0x02
 DEVICE_BATTERY_BOARD = 0x03
 DEVICE_GPS_IMU = 0x04
@@ -103,14 +104,16 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 	def sendResponse(self, deviceId):
 		# Build packet header
 		packet = [0] * 16
-		packet[0] = 0x50
+		packet[0] = 0xF0
 
 		if deviceId == DEVICE_ALLTRAX:
 			# Write back the value of the throttle for the motor controller output
 			throttle = int(self.cache.getNumerical('throttle',0))
-			packet[1] = (throt & 0xFF)
-			packet[2] = (throt & 0xFF00) >> 8
-		elif deviceId == DEVICE_BATTERY_BOARD:
+			packet[1] = (throttle & 0xFF)
+			packet[2] = (throttle & 0xFF00) >> 8
+                elif deviceId == DEVICE_VESC:
+                        return
+                elif deviceId == DEVICE_BATTERY_BOARD:
 			return
 		elif deviceId == DEVICE_MOTOR_BOARD:
 			return
@@ -120,6 +123,8 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			return
 		elif deviceId == DEVICE_SOLAR:
 			return
+                else:
+                        return
 
 		# Generate checksum at the end of the packet, and write the packet to the serial stream.
 		packet[15] = self.encodeChecksum(packet)
