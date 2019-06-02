@@ -111,9 +111,9 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			throttle = int(self.cache.getNumerical('throttle',0))
 			packet[1] = (throttle & 0xFF)
 			packet[2] = (throttle & 0xFF00) >> 8
-                elif deviceId == DEVICE_VESC:
-                        return
-                elif deviceId == DEVICE_BATTERY_BOARD:
+		elif deviceId == DEVICE_VESC:
+			return
+		elif deviceId == DEVICE_BATTERY_BOARD:
 			return
 		elif deviceId == DEVICE_MOTOR_BOARD:
 			return
@@ -123,8 +123,8 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			return
 		elif deviceId == DEVICE_SOLAR:
 			return
-                else:
-                        return
+		else:
+			return
 
 		# Generate checksum at the end of the packet, and write the packet to the serial stream.
 		packet[15] = self.encodeChecksum(packet)
