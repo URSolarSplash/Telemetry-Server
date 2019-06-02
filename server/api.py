@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import smtplib
 import time
 import server.config as config
+import server.statistics as statistics
 import threading
 import json
 import logging
@@ -85,7 +86,16 @@ def liveFormattedData():
 			maxValue = "{0}{1}".format(maxValue,keyUnits)
 		minMaxValue = "min: {0} / max: {1}".format(minValue,maxValue)
 		jsonString += "  \"{0}\" : {{\"current\" : \"{1}\", \"min_max\" : \"{2}\", \"currentNum\" : {3}}}".format(key,currentValue,minMaxValue,currentValueNumerical)
-	jsonString += "\n}"
+	jsonString += ",\n"
+	statusString = ""
+	if (statistics.stats["hasRadio"]):
+		statusString += "Radio Link Established "
+	else:
+		statusString += "No Radio Link "
+	percentCoverage = 0
+	statusString += "({0} data points / {1} packets / {2:.1f}% coverage) Status: {3} active devices".format(statistics.stats["numDataPoints"],statistics.stats["numRadioPackets"],dataInstance.getCoveragePercentage(),statistics.stats["numActiveDevices"])
+	jsonString += "  \"status\" : \""+statusString+"\"\n"
+	jsonString += "}"
 	response = app.response_class(
 		response=jsonString,
 		status=200,

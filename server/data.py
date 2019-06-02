@@ -84,6 +84,13 @@ class DataCache:
             return self.keyList[index][0]
         except Exception:
             return None
+    def getCoveragePercentage(self):
+        numKeys = len(self.keyList)
+        numValidKeys = 0
+        for key in self.values.keys():
+            if not self.values[key].isExpired():
+                numValidKeys += 1
+        return (numValidKeys / numKeys) * 100.0
     def setRadioMirror(self, instance):
         self.radioMirror = instance
     def set(self, name, value):

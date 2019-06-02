@@ -42,6 +42,7 @@ char current[34][16];
 char minmax[34][64  ];
 double values[34];
 char tempText[16];
+char statusText[128];
 
 int main(void){
     const int screenWidth = 1280;
@@ -89,15 +90,18 @@ int main(void){
                         char *name = parsedValue->u.object.values[x].name;
                         json_value *valuesObject = parsedValue->u.object.values[x].value;
 
-                        json_value *currentValue = valuesObject->u.object.values[0].value;
-                        json_value *minMaxValue = valuesObject->u.object.values[1].value;
-                        json_value *numericalValue = valuesObject->u.object.values[2].value;
-
-                        if (currentValue->type == json_string) { strcpy(current[x],currentValue->u.string.ptr); }
-                        if (minMaxValue->type == json_string) { strcpy(minmax[x],minMaxValue->u.string.ptr); }
-
-                        if (numericalValue->type == json_double) { values[x]=numericalValue->u.dbl; }
-                        if (numericalValue->type == json_integer) { values[x]=numericalValue->u.integer; }
+                        // last element is a status indicator
+                        if (x == parsedValue->u.object.length - 1){
+                            if (valuesObject->type == json_string) { strcpy(statusText,valuesObject->u.string.ptr); }
+                        } else {
+                            json_value *currentValue = valuesObject->u.object.values[0].value;
+                            json_value *minMaxValue = valuesObject->u.object.values[1].value;
+                            json_value *numericalValue = valuesObject->u.object.values[2].value;
+                            if (currentValue->type == json_string) { strcpy(current[x],currentValue->u.string.ptr); }
+                            if (minMaxValue->type == json_string) { strcpy(minmax[x],minMaxValue->u.string.ptr); }
+                            if (numericalValue->type == json_double) { values[x]=numericalValue->u.dbl; }
+                            if (numericalValue->type == json_integer) { values[x]=numericalValue->u.integer; }
+                        }
 
                         //json_value_free(valuesObject);
                     }
@@ -152,6 +156,9 @@ int main(void){
         drawText(x4,515,"Combined Output Current",font_med,2);
         drawText(x4,515+25,current[27],font_xlarge,2);
 
+        DrawTextEx(font, statusText, (Vector2){1260-MeasureTextEx(font, statusText, font_med, 0).x,678}, font_med, 0, LIGHTGRAY);
+
+
 /*
         int mouseX = GetMouseX();
         int mouseY = GetMouseY();
@@ -204,14 +211,14 @@ void drawDataPointWithMinMax(int x, int y, char *name,  int index){
 
 void drawLargeDial(int x, int y, int bottomVal, int topVal, int index, int size, int label){
     DrawCircleSector((Vector2){x,y}, size, 75,285, 64, LIGHTGRAY);
-    DrawCircleSector((Vector2){x,y}, size-3, 75,285, 64, fgColor);
+    DrawCircleSector((Vector2){x,y}, size-3, 75,285, 64, (Color){ 68, 68, 68, 255 });
     for (int i = 1; i < 10; i++){
         int xx = x + (cos(((i*21) - 195) * DEG_TO_RAD)*(size-8));
         int yy = y + (sin(((i*21) - 195) * DEG_TO_RAD)*(size-8));
         DrawLineEx((Vector2){x,y},(Vector2){xx,yy},2,LIGHTGRAY);
     }
-    DrawCircleSector((Vector2){x,y}, (size-20), 75,285, 64, fgColor);
-    DrawTriangle((Vector2){x,y},(Vector2){x-114,y+30},(Vector2){x+114,y+30}, fgColor);
+    DrawCircleSector((Vector2){x,y}, (size-20), 75,285, 64, (Color){ 68, 68, 68, 255 });
+    DrawTriangle((Vector2){x,y},(Vector2){x-114,y+30},(Vector2){x+114,y+30}, (Color){ 68, 68, 68, 255 });
     //DrawRectangleV((Vector2){x-70,y+18},(Vector2){140,28}, BLACK);
 
     sprintf(tempText,"%d",bottomVal);
