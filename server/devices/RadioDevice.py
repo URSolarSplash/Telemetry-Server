@@ -21,8 +21,8 @@ class RadioDevice(GenericSerialDevice):
                     self.read(packet)
 
             except Exception as e:
-                traceback.print_exc()
-                #self.close()
+                #traceback.print_exc()
+                self.close()
     def read(self,packet):
         # Reads a packet
         if len(packet) != 6:
@@ -34,8 +34,9 @@ class RadioDevice(GenericSerialDevice):
         dataKey = self.cache.indexToKey(dataId)
         if dataValue != dataValue:
             dataValue = None
-        print("{0} = {1}".format(dataKey,dataValue))
-        self.cache.set(dataKey,dataValue)
+        #print("{0} = {1}".format(dataKey,dataValue))
+        if not dataValue == None:
+            self.cache.set(dataKey,dataValue)
     def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream if radio is active
         # Each packet consists of six bytes:
