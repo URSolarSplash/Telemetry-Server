@@ -106,6 +106,15 @@ class DataCache:
             statistics.stats["numDataPoints"] += 1
         else:
             print("[Tried to set invalid key [{0}]]".format(name))
+    def setNoRadio(self, name, value):
+        # Set a data point if it exists
+        # Don't send this set over radio
+        # If it doesn't exist, raise an error
+        if name in self.values:
+            self.values[name].set(value)
+            statistics.stats["numDataPoints"] += 1
+        else:
+            print("[Tried to set invalid key [{0}]]".format(name))
     def get(self, name):
         # Get a data point's value if it exists
         # If it doesn't exist, return a null value

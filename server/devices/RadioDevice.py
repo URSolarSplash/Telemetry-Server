@@ -34,11 +34,12 @@ class RadioDevice(GenericSerialDevice):
         dataKey = self.cache.indexToKey(dataId)
         if dataValue != dataValue:
             dataValue = None
-        print("From Master: {0} = {1}".format(dataKey,dataValue))
+        #print("From Master: {0} = {1}".format(dataKey,dataValue))
         if not dataValue == None:
-            self.cache.set(dataKey,dataValue)
+            self.cache.setNoRadio(dataKey,dataValue)
     def write(self,dataName, dataValue):
         try:
+            print("To Master: {0} = {1}".format(dataName,dataValue))
             # Writes a data point update to the radio stream if radio is active
             # Each packet consists of six bytes:
             # byte 1: packet header (0xF0)
@@ -46,7 +47,7 @@ class RadioDevice(GenericSerialDevice):
             # byte 3 - 6: data
             packet = bytearray(6)
             packet[0] = 0xF0
-            packet[1] = self.dataCache.keyToIndex(dataName)
+            packet[1] = self.cache.keyToIndex(dataName)
             if not dataValue is None:
                 packet[2:6] = bytearray(struct.pack(">f", dataValue))
             else:
@@ -55,4 +56,5 @@ class RadioDevice(GenericSerialDevice):
             self.port.write(packet)
         except Exception as e:
             print("Failed to write radio packet from Slave.")
+            traceback.print_exc()
             pass

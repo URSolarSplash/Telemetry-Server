@@ -17,7 +17,7 @@ class RadioManager():
         self.lastUpdate = time.time()
         self.buffer = []
         try:
-            self.serialPort = serial.Serial(
+            self.port = serial.Serial(
                 port='/dev/serial0',
                 baudrate=57600,
                 parity=serial.PARITY_NONE,
@@ -72,7 +72,7 @@ class RadioManager():
             else:
                 # Use NaN to represent None for the data point.
                 packet[2:6] = bytearray(struct.pack(">f", float('NaN')))
-            self.serialPort.write(packet)
+            self.port.write(packet)
     def read(self,packet):
         # Reads a packet
         if len(packet) != 6:
@@ -89,7 +89,7 @@ class RadioManager():
             self.cache.set(dataKey,dataValue)
     def shutdown(self):
         try:
-            self.serialPort.close()
+            self.port.close()
         except:
             pass
         print("[Radio] shutdown complete.")
