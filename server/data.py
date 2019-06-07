@@ -62,7 +62,6 @@ class DataCache:
         # Used for radio protocol
         self.keyToIndexMap = {}
         self.keyList = keyList
-        self.radioMirror = None
 
         # dict of alarms
         self.alarms = config.alarmThresholds
@@ -91,17 +90,12 @@ class DataCache:
             if not self.values[key].isExpired():
                 numValidKeys += 1
         return (numValidKeys / numKeys) * 100.0
-    def setRadioMirror(self, instance):
-        self.radioMirror = instance
     def set(self, name, value):
         # Set a data point if it exists
         # If it doesn't exist, raise an error
         if name in self.values:
             self.values[name].set(value)
             statistics.stats["numDataPoints"] += 1
-            if self.radioMirror:
-                # If we're hooked up to radio transmitter, send data update packet
-                self.radioMirror.write(name, value)
         else:
             print("[Tried to set invalid key [{0}]]".format(name))
     def get(self, name):

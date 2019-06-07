@@ -1,6 +1,7 @@
 from .GenericSerialDevice import GenericSerialDevice
 from server import statistics
 import traceback
+import struct
 
 class RadioDevice(GenericSerialDevice):
 	def __init__(self, cache, portName):
@@ -20,8 +21,7 @@ class RadioDevice(GenericSerialDevice):
 					self.read(packet)
 
 			except Exception as e:
-				pass
-				#traceback.print_exc()
+				traceback.print_exc()
 				#self.close()
 	def read(self,packet):
 		# Reads a packet
@@ -30,7 +30,8 @@ class RadioDevice(GenericSerialDevice):
 		packetHeader = packet[0]
 		dataId = packet[1]
 		data = packet[2:6]
-		dataValue = struct.unpack(">f", data)
+		dataValue = struct.unpack(">f", bytearray(data))[0]
+		print("{0} = {1}".format(self.cache.indexToKey(dataId),dataValue))
 	def write(self,dataName, dataValue):
 		# Writes a data point update to the radio stream if radio is active
 		# Each packet consists of six bytes:

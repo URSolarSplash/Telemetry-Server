@@ -40,11 +40,6 @@ radio = RadioManager(data)
 server = HTTPServerManager(data)
 dashboard = DashboardManager()
 
-# Set up the radio mirroring
-# This uses the radio system to emit events when data is updated
-# Used for remote data collection etc...
-data.setRadioMirror(radio)
-
 # Set up control algorithms manager
 controlAlgorithms = ControlAlgorithms(data)
 
