@@ -57,7 +57,6 @@ class RadioManager():
             self.lastUpdate = time.time()
         for i, key in enumerate(self.dataCache.getKeys()):
             self.write(key, self.dataCache.getNumerical(key,0))
-
     def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream if radio is active
         if self.mode == 1:
@@ -73,7 +72,7 @@ class RadioManager():
             else:
                 # Use NaN to represent None for the data point.
                 packet[2:6] = bytearray(struct.pack(">f", float('NaN')))
-            self.serialPort.write(bytes(dataString,"utf-8"))
+            self.serialPort.write(packet)
     def read(self,packet):
         # Reads a packet
         if len(packet) != 6:

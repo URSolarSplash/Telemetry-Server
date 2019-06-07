@@ -90,7 +90,7 @@ scanRate = 1.1 # offset so scan doesn't always happen at same time as database s
 saveRate = 1
 
 # Interval at which data is sent over radio
-radioPacketRate = 0.25
+radioPacketRate = 1
 
 # Number of seconds until a data point is invalidated
 dataTimeOut = 5
