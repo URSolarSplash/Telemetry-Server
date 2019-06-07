@@ -1,11 +1,15 @@
 from .GenericSerialDevice import GenericSerialDevice
 from server import statistics
+from server import config
 import traceback
 import struct
+import time
 
 class RadioDevice(GenericSerialDevice):
     def __init__(self, cache, portName):
         super(RadioDevice, self).__init__(cache, portName, 57600)
+        self.lastUpdate = time.time()
+        self.writeCache = {}
     def update(self):
         if self.open:
             try:
@@ -21,8 +25,21 @@ class RadioDevice(GenericSerialDevice):
                     self.read(packet)
 
             except Exception as e:
-                #traceback.print_exc()
+                traceback.print_exc()
                 self.close()
+
+        # Sends packets at a fixed rate
+        # Each time it checks the write cache and if there are new packets, writes them
+        if time.time() - self.lastUpdate < config.radioPacketRate:
+            return
+        else:
+            self.lastUpdate = time.time()
+        #print("Writing cache packets")
+        for i, key in enumerate(self.writeCache.keys()):
+            self.write(key, self.writeCache.get(key))
+        self.writeCache = {}
+    def addToWriteCache(self,name,value):
+        self.writeCache[name] = value
     def read(self,packet):
         # Reads a packet
         if len(packet) != 6:
@@ -39,7 +56,7 @@ class RadioDevice(GenericSerialDevice):
             self.cache.setNoRadio(dataKey,dataValue)
     def write(self,dataName, dataValue):
         try:
-            print("To Master: {0} = {1}".format(dataName,dataValue))
+            #print("To Master: {0} = {1}".format(dataName,dataValue))
             # Writes a data point update to the radio stream if radio is active
             # Each packet consists of six bytes:
             # byte 1: packet header (0xF0)
