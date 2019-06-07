@@ -56,7 +56,7 @@ class RadioManager():
         else:
             self.lastUpdate = time.time()
         for i, key in enumerate(self.dataCache.getKeys()):
-            self.write(key, self.dataCache.getNumerical(key,0))
+            self.write(key, self.dataCache.get(key))
     def write(self,dataName, dataValue):
         # Writes a data point update to the radio stream if radio is active
         if self.mode == 1:
