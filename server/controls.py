@@ -127,3 +127,4 @@ class ControlAlgorithms:
         if (suggestedCurrent < 0 ):
             suggestedCurrent = 0
         suggestedCurrent += self.cache.getNumerical("solarChargerCurrentTotal",0)
+        self.cache.set("throttleRecommendation",suggestedCurrent)
