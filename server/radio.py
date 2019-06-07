@@ -69,7 +69,7 @@ class RadioManager():
 			packet[0] = 0xF0
 			packet[1] = self.dataCache.keyToIndex(dataName)
 			packet[2:6] = bytearray(struct.pack(">f", dataValue))
-			self.serialPort.write(bytes(dataString,"utf-8"))
+			self.serialPort.write(packet)
 	def read(self,packet):
 		# Reads a packet
 		if len(packet) != 6:
