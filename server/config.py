@@ -37,6 +37,9 @@ dataKeys = [
     ["throttleInput",0,"b"],
     ["throttleMode",0,""],
     ["throttleRecommendation",1," A"],
+    ["targetAh",1," Ah"],
+    ["targetDuration",0,"mil"],
+    ["startTime",0,"mil"]
     ["throttleEnabled",0,""],
     ["boatConfig",0,""],
     ["vescFault",0,""]

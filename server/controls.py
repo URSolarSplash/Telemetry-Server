@@ -14,6 +14,35 @@ class ControlAlgorithms:
         self.prevBoatConfig = 0
         self.prevThrottleMode = 0
         self.throttleOutEnable = 0
+    def interp(self,val,a,b,x,y):
+        q = (val - a)/(b-a)
+        return y + (1-q)*(x-y)
+
+    def millis(self):
+		return time.time()*1000
+
+    def getEffective(self,avgCurrent):
+        effective = 0.0
+        if avgCurrent <= 7.9:
+            effective = 39.5
+        elif avgCurrent <= 23.5:
+            #math
+            #x = (avgCurrent-7.9)/(23.5-7.9)
+            #effective = 35.25 + (1-x)*(39.5-35.25)
+            return interp(avgCurrent,7.9,23.5,39.5,35.25)
+        elif avgCurrent <= 33.8:
+            return interp(avgCurrent,23.5,33.8,35.25,33.8)
+        elif avgCurrent <= 60.8:
+            return interp(avgCurrent,33.8,60.8,33.8,30.4)
+        elif avgCurrent <= 104.1:
+            return interp(avgCurrent,60.8,104.1,30.4,26.03)
+        elif avgCurrent <= 138.4:
+            return interp(avgCurrent,104.1,138.4,26.03,23.07)
+        elif avgCurrent <= 212.0:
+            return interp(avgCurrent,138.4,212.0,23.07,17.67)
+        else:
+            effective = 17.667
+
     def update(self):
         if time.time() - self.lastUpdate < config.controlAlgorithmUpdateRate:
             return
@@ -89,3 +118,13 @@ class ControlAlgorithms:
                     self.throttleOutEnable = True
                 self.cache.set("throttle",0)
                 self.cache.set("throttleCurrentTarget",0)
+
+        # current recommendation
+        elapsedTime = millis() - self.cache.getNumerical("startTime",0)
+        avgCurrent = self.cache.getNumerical("batteryConsumedAh",0)/elapsedTime
+        ahrRemaining = getEffective(avgCurrent)-self.cache.getNumerical("batteryConsumedAh",0)
+        suggestedCurrent = (ahrRemaining - self.cache.getNumerical("targetAh",0))/(self.cache.getNumerical("targetDuration",3*1000*3600)-elapsedTime)
+        if (suggestedCurrent < 0 ):
+            suggestedCurrent = 0
+        suggestedCurrent += self.cache.getNumerical("solarChargerCurrentTotal",0)
+        self.cache.set("throttleRecommendation",suggestedCurrent)
