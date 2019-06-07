@@ -11,7 +11,6 @@ class ControlAlgorithms:
     def __init__(self, cache):
         self.cache = cache
         self.lastUpdate = time.time()
-        self.throttlePid = PID(1.5,0.1,0.0,setpoint=0)
         self.prevBoatConfig = 0
         self.prevThrottleMode = 0
         self.throttleOutEnable = 0
@@ -78,21 +77,13 @@ class ControlAlgorithms:
                 currentInput = self.cache.getNumerical("batteryCurrent",0)
 
                 # Map throttle input to a current value
-                self.cache.set("throttleCurrentTarget",(throttleInput / 255.0) * -60.0)
-                goalCurrent = self.cache.getNumerical("throttleCurrentTarget",0)
+                goalCurrent = (throttleInput / 255.0) * -60.0
+                self.cache.set("throttleCurrentTarget",goalCurrent)
 
-                # Scale currents so positive = drawing current
-                currentInput = -currentInput;
-                goalCurrent = -goalCurrent;
-
-                self.throttlePid.setpoint = goalCurrent
-                pidOut = self.throttlePid(currentInput)
-                #print("PID delta = "+str(pidOut))
-                throttle = throttleOutput +pidOut
-                #print("PID output = "+str(throttle))
-
-                throttle = max(min(255,throttle),0)
-                self.cache.set("throttle",0) # DISABLED FOR SAFETY UNTIL WE BUILD ALGORITHM
+                # This goal current is read by the VESC.
+                # Note: Alltrax right now does not support current-based mode!
+                # Write 0 to the throttle
+                self.cache.set("throttle",0)
             # Handle any case where it's been deemed the throttle must be reset
             if not self.throttleOutEnable:
                 if self.cache.getNumerical("throttle",0) <= 5:

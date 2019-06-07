@@ -36,11 +36,14 @@ class VescDevice(GenericSerialDevice):
 		# Input throttle: 0 to 100
 		# Only write a value if we are in endurance mode
 		if (self.cache.getNumerical('boatConfig',0) == 0):
-			throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
+			if (self.cache.getNumerical('throttleMode',0) == 0):
+				throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
+				throttleMessage = pyvesc.SetDutyCycle(int(throttle))
+				self.port.write(pyvesc.encode(throttleMessage))
+			else:
+				current = (self.cache.getNumerical('throttleCurrentTarget',0) * -1 * 1000.0)
+				throttleMessage = pyvesc.SetCurrent(int(current))
+				self.port.write(pyvesc.encode(throttleMessage))
 		else:
-			throttle = 0
-
-		throttleMessage = pyvesc.SetDutyCycle(int(throttle))
-		self.port.write(pyvesc.encode(throttleMessage))
-		# Write value request
+			self.port.write(pyvesc.encode(pyvesc.SetDutyCycle(0)))
 		self.port.write(pyvesc.encode_request(pyvesc.GetValues))
