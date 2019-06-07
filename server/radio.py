@@ -86,7 +86,7 @@ class RadioManager():
         dataKey = self.cache.indexToKey(dataId)
         if dataValue != dataValue:
             dataValue = None
-        print("From Slave: {0} = {1}".format(dataKey,dataValue))
+        #print("From Slave: {0} = {1}".format(dataKey,dataValue))
         if not dataValue == None:
             self.cache.set(dataKey,dataValue)
     def shutdown(self):

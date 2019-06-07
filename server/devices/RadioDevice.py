@@ -34,7 +34,7 @@ class RadioDevice(GenericSerialDevice):
             return
         else:
             self.lastUpdate = time.time()
-        print("Writing cache packets")
+        #print("Writing cache packets")
         for i, key in enumerate(self.writeCache.keys()):
             self.write(key, self.writeCache.get(key))
         self.writeCache = {}
@@ -56,7 +56,7 @@ class RadioDevice(GenericSerialDevice):
             self.cache.setNoRadio(dataKey,dataValue)
     def write(self,dataName, dataValue):
         try:
-            print("To Master: {0} = {1}".format(dataName,dataValue))
+            #print("To Master: {0} = {1}".format(dataName,dataValue))
             # Writes a data point update to the radio stream if radio is active
             # Each packet consists of six bytes:
             # byte 1: packet header (0xF0)
