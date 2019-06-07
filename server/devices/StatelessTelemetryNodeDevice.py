@@ -45,12 +45,13 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 		packetChecksum = packet[15]
 
 		if deviceId == DEVICE_ALLTRAX:
-			self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
-			self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
-			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
-			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
-			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
-			self.cache.set("alltraxFault",packet[10])
+			#self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
+			#self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
+			#self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
+			#self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
+			#self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
+			#self.cache.set("alltraxFault",packet[10])
+			pass
 		elif deviceId == DEVICE_BATTERY_BOARD:
 			pass
 		elif deviceId == DEVICE_MOTOR_BOARD:
