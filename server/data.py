@@ -102,7 +102,7 @@ class DataCache:
         if name in self.values:
             self.values[name].set(value)
             if self.radioOutputDevice != None and config.writeFromSlave == True:
-                self.radioOutputDevice.write(name, value)
+                self.radioOutputDevice.addToWriteCache(name, value)
             statistics.stats["numDataPoints"] += 1
         else:
             print("[Tried to set invalid key [{0}]]".format(name))
