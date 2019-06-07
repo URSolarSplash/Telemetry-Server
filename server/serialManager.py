@@ -94,6 +94,8 @@ class SerialManager:
 				deviceInstance = RadioDevice(self.cache,portId)
 				# Turn on radio flag in statistics
 				statistics.stats["hasRadio"] = True
+				# Set data cache to link to radio object
+				self.cache.setRadioDevice(deviceInstance)
 				# Disable control algorithms for this session (slave mode).
 				print("[Serial Manager] Setting config to slave mode for duration of this session! Control algorithms disabled.")
 				config.isSlave = True
@@ -128,6 +130,7 @@ class SerialManager:
 				self.devices.remove(device)
 				if type(device) is RadioDevice:
 					statistics.stats["hasRadio"] = False
+					self.cache.setRadioDevice(None)
 
 	def pollDevices(self):
 		if time.time() - self.lastPoll < config.pollRate:

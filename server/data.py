@@ -63,6 +63,10 @@ class DataCache:
         self.keyToIndexMap = {}
         self.keyList = keyList
 
+        # Radio object with a write() function for data points
+        # If set, this will output data points to this object.
+        self.radioOutputDevice = None
+
         # dict of alarms
         self.alarms = config.alarmThresholds
         for alarmId in self.alarms:
@@ -83,6 +87,8 @@ class DataCache:
             return self.keyList[index][0]
         except Exception:
             return None
+    def setRadioDevice(self, device):
+        self.radioOutputDevice = device
     def getCoveragePercentage(self):
         numKeys = len(self.keyList)
         numValidKeys = 0
@@ -95,6 +101,8 @@ class DataCache:
         # If it doesn't exist, raise an error
         if name in self.values:
             self.values[name].set(value)
+            if self.radioOutputDevice != None and config.writeFromSlave == True:
+                self.radioOutputDevice.write(name, value)
             statistics.stats["numDataPoints"] += 1
         else:
             print("[Tried to set invalid key [{0}]]".format(name))

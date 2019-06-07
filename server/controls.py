@@ -76,14 +76,13 @@ class ControlAlgorithms:
                 throttleOutput = self.cache.getNumerical("throttle",0)
                 currentInput = self.cache.getNumerical("batteryCurrent",0)
 
+                # This goal current is read by the VESC.
+                # Note: Alltrax right now does not support current-based mode!
                 # Map throttle input to a current value
                 goalCurrent = (throttleInput / 255.0) * -60.0
                 self.cache.set("throttleCurrentTarget",goalCurrent)
+                self.cache.set("throttle",throttleOutput)
 
-                # This goal current is read by the VESC.
-                # Note: Alltrax right now does not support current-based mode!
-                # Write 0 to the throttle
-                self.cache.set("throttle",0)
             # Handle any case where it's been deemed the throttle must be reset
             if not self.throttleOutEnable:
                 if self.cache.getNumerical("throttle",0) <= 5:

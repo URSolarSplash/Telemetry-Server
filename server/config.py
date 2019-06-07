@@ -110,6 +110,10 @@ httpLogging = False
 # Will be automatically disabled if the server is "slave",eg, receiving radio telemetry.
 isSlave = False
 
+# Whether the slave can write back values to the parent server
+# Allows for control of data points (eg throttle) from a remote computer
+writeFromSlave = True
+
 # Interval at which control algorithms are updated, if relevant
 controlAlgorithmUpdateRate = 0.01
 

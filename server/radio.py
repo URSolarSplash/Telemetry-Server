@@ -80,11 +80,13 @@ class RadioManager():
         packetHeader = packet[0]
         dataId = packet[1]
         data = packet[2:6]
-        dataValue = struct.unpack(">f", data)
-        key = self.cache.indexToKey(dataId)
-        if not key is None:
-            self.cache.set(dataName,dataValue)
-            statistics.stats["numRadioPackets"] += 1
+        dataValue = struct.unpack(">f", bytearray(data))[0]
+        dataKey = self.cache.indexToKey(dataId)
+        if dataValue != dataValue:
+            dataValue = None
+        print("From Slave: {0} = {1}".format(dataKey,dataValue))
+        if not dataValue == None:
+            self.cache.set(dataKey,dataValue)
     def shutdown(self):
         try:
             self.serialPort.close()
