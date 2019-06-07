@@ -81,10 +81,11 @@ class ControlAlgorithms:
                 # Map throttle input to a current value
                 goalCurrent = (throttleInput / 255.0) * -60.0
                 self.cache.set("throttleCurrentTarget",goalCurrent)
-                self.cache.set("throttle",throttleOutput)
+                self.cache.set("throttle",throttleInput)
 
             # Handle any case where it's been deemed the throttle must be reset
             if not self.throttleOutEnable:
                 if self.cache.getNumerical("throttle",0) <= 5:
                     self.throttleOutEnable = True
                 self.cache.set("throttle",0)
+                self.cache.set("throttleCurrentTarget",0)
