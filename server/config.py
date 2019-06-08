@@ -1,48 +1,52 @@
 from server.alarms import *
 
+# Default number of seconds until a data point is invalidated
+defaultDataTimeout = 5
+
 # Keys in the SQLite table
 # Please keep sorted alphabetically!
 # Each entry is a key, number of decimals for rounding purposes, and a unit for display
+# [name, decimals rounding, units, timeout seconds]
 dataKeys = [
-    ["alltraxFault",0,""],
-    ["batteryConsumedAh",2," Ah"],
-    ["batteryCurrent",2," A"],
-    ["batteryPower",0," W"],
-    ["batteryStateOfCharge",1,"%"],
-    ["batteryTimeRemaining",0," min"],
-    ["batteryVoltage",2," V"],
-    ["controllerDutyCycle",2,"%"],
-    ["controllerInCurrent",0," A"],
-    ["controllerInVoltage",2," V"],
-    ["controllerOutCurrent",2," A"],
-    ["controllerRpm",0," rpm"],
-    ["controllerTemp",2," C"],
-    ["gpsFix",0,""],
-    ["gpsHeading",0," deg"],
-    ["gpsLatitude",4,""],
-    ["gpsLongitude",4,""],
-    ["gpsNumSatellites",0,""],
-    ["gpsSpeedKnots",2," kt"],
-    ["gpsSpeedMph",2," mph"],
-    ["imuPitch",2," deg"],
-    ["imuRoll",2," deg"],
-    ["motorRpm",0," rpm"],
-    ["motorTemp",2," C"],
-    ["propRpm",0," rpm"],
-    ["solarChargerCurrent1",2," A"],
-    ["solarChargerCurrent2",2," A"],
-    ["solarChargerCurrentTotal",2," A"],
-    ["throttle",0,"b"],
-    ["throttleCurrentTarget",1," A"],
-    ["throttleInput",0,"b"],
-    ["throttleMode",0,""],
-    ["throttleRecommendation",1," A"],
-    ["targetAh",1," Ah"],
-    ["targetDuration",0,"mil"],
-    ["startTime",0,"mil"]
-    ["throttleEnabled",0,""],
-    ["boatConfig",0,""],
-    ["vescFault",0,""]
+    ["alltraxFault",0,"",defaultDataTimeout],
+    ["batteryConsumedAh",2," Ah",defaultDataTimeout],
+    ["batteryCurrent",2," A",defaultDataTimeout],
+    ["batteryPower",0," W",defaultDataTimeout],
+    ["batteryStateOfCharge",1,"%",defaultDataTimeout],
+    ["batteryTimeRemaining",0," min",defaultDataTimeout],
+    ["batteryVoltage",2," V",defaultDataTimeout],
+    ["controllerDutyCycle",2,"%",defaultDataTimeout],
+    ["controllerInCurrent",0," A",defaultDataTimeout],
+    ["controllerInVoltage",2," V",defaultDataTimeout],
+    ["controllerOutCurrent",2," A",defaultDataTimeout],
+    ["controllerRpm",0," rpm",defaultDataTimeout],
+    ["controllerTemp",2," C",defaultDataTimeout],
+    ["gpsFix",0,"",defaultDataTimeout],
+    ["gpsHeading",0," deg",defaultDataTimeout],
+    ["gpsLatitude",4,"",defaultDataTimeout],
+    ["gpsLongitude",4,"",defaultDataTimeout],
+    ["gpsNumSatellites",0,"",defaultDataTimeout],
+    ["gpsSpeedKnots",2," kt",defaultDataTimeout],
+    ["gpsSpeedMph",2," mph",defaultDataTimeout],
+    ["imuPitch",2," deg",defaultDataTimeout],
+    ["imuRoll",2," deg",defaultDataTimeout],
+    ["motorRpm",0," rpm",defaultDataTimeout],
+    ["motorTemp",2," C",defaultDataTimeout],
+    ["propRpm",0," rpm",defaultDataTimeout],
+    ["solarChargerCurrent1",2," A",defaultDataTimeout],
+    ["solarChargerCurrent2",2," A",defaultDataTimeout],
+    ["solarChargerCurrentTotal",2," A",defaultDataTimeout],
+    ["throttle",0,"b",defaultDataTimeout],
+    ["throttleCurrentTarget",1," A",defaultDataTimeout],
+    ["throttleInput",0,"b",defaultDataTimeout],
+    ["throttleMode",0,"",defaultDataTimeout],
+    ["throttleRecommendation",1," A",defaultDataTimeout],
+    ["targetAh",1," Ah",0],
+    ["targetDuration",0,"mil",0],
+    ["startTime",0,"mil",0],
+    ["throttleEnabled",0,"",defaultDataTimeout],
+    ["boatConfig",0,"",defaultDataTimeout],
+    ["vescFault",0,"",defaultDataTimeout]
 ]
 
 # Defines a list of alarms
@@ -94,9 +98,6 @@ saveRate = 1
 
 # Interval at which data is sent over radio
 radioPacketRate = 0.25
-
-# Number of seconds until a data point is invalidated
-dataTimeOut = 5
 
 # Port for the HTTP interface
 httpPort = 5000

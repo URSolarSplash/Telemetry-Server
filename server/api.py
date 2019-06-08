@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import smtplib
 import time
 import server.config as config
@@ -40,6 +40,14 @@ def liveData():
 	)
 	response.headers.add('Access-Control-Allow-Origin', '*')
 	return response
+
+@app.route('/set')
+def setData():
+	key = request.args.get('key')
+	value = request.args.get('value')
+	if (not key is None) and (not value is None):
+		dataInstance.set(key,float(value))
+	return value
 
 @app.route('/stats_raw',methods=['GET'])
 def statsRaw():

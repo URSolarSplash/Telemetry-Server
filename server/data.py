@@ -8,8 +8,9 @@ import math
 # - get(): gets the value, or None if value is >timeout seconds old.
 # - set(value): sets the value.
 class DataPoint:
-    def __init__(self):
+    def __init__(self,timeout):
         self.lastUpdated = 0
+        self.timeout = timeout
         self.value = None
         self.hasMin = False
         self.hasMax = False
@@ -34,7 +35,10 @@ class DataPoint:
             return None
     def getNumerical(self,default):
         if (not self.isExpired()):
-            return self.value
+            if not self.value is None:
+                return self.value
+            else:
+                return default
         else:
             return default
     def getMin(self):
@@ -48,8 +52,11 @@ class DataPoint:
         else:
             return None
     def isExpired(self):
-        # Expires if the time since last update has been at least 5 seconds
-        return (time() - self.lastUpdated > config.dataTimeOut)
+        # Expires if the time since last update has been more than the timeout
+        # If timeout is zero, data never times out
+        if self.timeout == 0:
+            return False
+        return (time() - self.lastUpdated > self.timeout)
     def __repr__(self):
         return "[Last Value: {0}, Expired: {1}]".format(self.value, self.isExpired())
 
@@ -75,7 +82,8 @@ class DataCache:
         # Create blank data points based on key list
         for i, keyArray in enumerate(self.keyList):
             key = keyArray[0]
-            self.values[key] = DataPoint()
+            timeout = keyArray[3]
+            self.values[key] = DataPoint(timeout)
             self.keyToIndexMap[key] = i
     def keyToIndex(self, key):
         try:

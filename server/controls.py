@@ -19,7 +19,7 @@ class ControlAlgorithms:
         return y + (1-q)*(x-y)
 
     def millis(self):
-		return time.time()*1000
+        return time.time()*1000
 
     def getEffective(self,avgCurrent):
         effective = 0.0
@@ -42,6 +42,7 @@ class ControlAlgorithms:
             return interp(avgCurrent,138.4,212.0,23.07,17.67)
         else:
             effective = 17.667
+        return effective
 
     def update(self):
         if time.time() - self.lastUpdate < config.controlAlgorithmUpdateRate:
@@ -120,11 +121,17 @@ class ControlAlgorithms:
                 self.cache.set("throttleCurrentTarget",0)
 
         # current recommendation
-        elapsedTime = millis() - self.cache.getNumerical("startTime",0)
+        if self.cache.getNumerical("startTime",0) == 0:
+            self.cache.set("startTime",self.millis())
+        elapsedTime = self.millis() - self.cache.getNumerical("startTime",0)
+        #print("Elapsed time: "+str(elapsedTime))
         avgCurrent = self.cache.getNumerical("batteryConsumedAh",0)/elapsedTime
-        ahrRemaining = getEffective(avgCurrent)-self.cache.getNumerical("batteryConsumedAh",0)
-        suggestedCurrent = (ahrRemaining - self.cache.getNumerical("targetAh",0))/(self.cache.getNumerical("targetDuration",3*1000*3600)-elapsedTime)
-        if (suggestedCurrent < 0 ):
+        #print("Avg current: "+str(avgCurrent))
+        ahrRemaining = self.getEffective(avgCurrent) + self.cache.getNumerical("batteryConsumedAh",0) # Consumed Ah is a neg. number
+        #print("Ahr remaining: "+str(ahrRemaining))
+        suggestedCurrent = (ahrRemaining - self.cache.getNumerical("targetAh",0))/((self.cache.getNumerical("targetDuration",3*1000*3600)-elapsedTime) / 3.6e+6)
+        #print("Suggested current: "+str(suggestedCurrent))
+        if (suggestedCurrent < 0):
             suggestedCurrent = 0
         suggestedCurrent += self.cache.getNumerical("solarChargerCurrentTotal",0)
         self.cache.set("throttleRecommendation",suggestedCurrent)
