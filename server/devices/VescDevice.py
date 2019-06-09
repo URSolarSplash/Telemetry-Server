@@ -44,7 +44,7 @@ class VescDevice(GenericSerialDevice):
                 # Goal current is the MOTOR CURRENT,
                 # To convert to motor current from battery current:  MOTOR CURRENT = BATTERY CURRENT / DUTY CYCLE
                 batteryCurrent = (self.cache.getNumerical('throttleCurrentTarget',0))
-                dutyCycle = (self.cache.getNumerical('controllerDutyCycle',0) / 100.0)
+                dutyCycle = (self.cache.getNumerical('controllerDutyCycle',0) / 10.0)
                 if dutyCycle > 0:
                     motorCurrent = (batteryCurrent / dutyCycle) * -1.0 * 1000.0
                 else:
