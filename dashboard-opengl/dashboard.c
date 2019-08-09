@@ -145,7 +145,7 @@ int main(void){
             drawText(x2,348,"Throttle Mode: Current",font_med,2);
 
         }
-        if (values[34] == 0){
+        if (values[37] == 0){
             drawText(x2,392,"Boat Config: Endurance",font_med,2);
         } else {
             drawText(x2,392,"Boat Config: Sprint",font_med,2);
