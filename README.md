@@ -38,6 +38,8 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 ### Prerequisite Libraries
 #### Python
 `pip3 install simple_pid pyserial regex pyvesc flask gevent pynmea2`
+
+
 `sudo apt-get install libcurl4-openssl-dev`
 
 
