@@ -45,7 +45,7 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 
 ## Fake a raspberry pi
 
-Download the ZIP file of the prerequisite kernel and disk image etc and launch it via the following command:
+Download the ZIP file of the prerequisite kernel and disk image etc FROM https://rochester.box.com/s/9geocd4ap3wg9967aifbctwxpymypq1q and launch it via the following command:
 
 (We're only supporting OSX or Linux distributions):
 
