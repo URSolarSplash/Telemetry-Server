@@ -45,3 +45,20 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 `pip3 install gevent`
 `pip3 install pynmea2`
 `sudo apt-get install libcurl4-openssl-dev`
+
+
+### Fake a raspberry pi
+
+Download the ZIP file of the prerequisite kernel and disk image etc and launch it via the following command:
+
+```
+sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
+-cpu arm1176 -m 256 \
+-M versatilepb -dtb versatile-pb-buster.dtb \
+-no-reboot \
+-serial stdio \
+-append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+-hda rpitest.qcow2 \
+-net nic -net user \
+-net tap,ifname=vnet0,script=no,downscript=no
+```
