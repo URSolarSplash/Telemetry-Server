@@ -205,7 +205,7 @@ int main(void){
         EndDrawing();
     }
 
-    ClearDroppedFiles();
+    // ClearDroppedFiles();
     UnloadFont(font);
     CloseWindow();
 
