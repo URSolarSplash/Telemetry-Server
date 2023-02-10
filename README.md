@@ -43,7 +43,7 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 `sudo apt-get install libcurl4-openssl-dev`
 
 
-### Fake a raspberry pi
+## Fake a raspberry pi
 
 Download the ZIP file of the prerequisite kernel and disk image etc and launch it via the following command:
 
