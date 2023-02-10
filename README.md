@@ -51,6 +51,13 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 
 Download the ZIP file of the prerequisite kernel and disk image etc and launch it via the following command:
 
+(We're only supporting OSX or Linux distributions):
+
+For OSX install QEMU through Homebrew: ``brew install qemu``. 
+For Gentoo: emerge --ask app-emulation/qemu. 
+For RHEL'ish systems: sudo dnf install qemu -y
+For Debian: sudo apt install qemu qemu-utils qemu-system-x86 qemu-system-gui
+
 ```
 sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
 -cpu arm1176 -m 256 \
