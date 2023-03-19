@@ -42,6 +42,9 @@ The Telemetry Server can be run in headless mode, or as part of the Telemetry UI
 
 `sudo apt-get install libcurl4-openssl-dev`
 
+## Develop environment
+
+If you want to replicate my development toolchain exactly as is - run Ubuntu 20.04 LTS in a virtual machine
 
 ## Fake a raspberry pi
 
