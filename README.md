@@ -73,7 +73,7 @@ sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
 ```
 
 
-## Fake a raspberry pi
+## Plans
 
 Plans
 - Rewrite telemetry server in Go
