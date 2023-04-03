@@ -71,3 +71,15 @@ sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
 -net nic -net user \
 -net tap,ifname=vnet0,script=no,downscript=no
 ```
+
+
+## Fake a raspberry pi
+
+Plans
+- Rewrite telemetry server in Go
+  - excellent cross platform support
+  - small binary size
+  - strong standard library
+  - built in concurrency support
+  - high performance
+  - the fact that the server can be reduced down to a single binary is advantageous for deploying it.
