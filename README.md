@@ -48,6 +48,8 @@ If you want to replicate my development toolchain exactly as is - run Ubuntu 20.
 
 ## Fake a raspberry pi
 
+In order to aid asynchronous development let's emulate a raspberry pi (yes, sensors aren't emulated but it's a good starting point).
+
 Download the ZIP file of the prerequisite kernel and disk image etc FROM https://rochester.box.com/s/9geocd4ap3wg9967aifbctwxpymypq1q and launch it via the following command:
 
 (We're only supporting OSX or Linux distributions):
