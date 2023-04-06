@@ -75,9 +75,8 @@ sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
 ```
 
 
-## Plans
+## In the works
 
-Plans
 - Rewrite telemetry server in Go
   - excellent cross platform support
   - small binary size
