@@ -149,7 +149,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			print("Write timed out")
 			# Handle timeout appropriately
 		except serial.SerialException as e:
-			print(f"Serial error: {e}")
+			print("Serial error:", e)
 			# Handle device errors
 
 	# Update function - Handles reading data, parsing, response packets
