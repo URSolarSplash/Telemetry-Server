@@ -123,7 +123,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			packet[1] = (throttle & 0xFF)
 			packet[2] = (throttle & 0xFF00) >> 8
 			packet[3] = int(self.cache.getNumerical('throttleEnabled',0))
-			print("writing", packet)
+
 		elif deviceId == DEVICE_VESC:
 			return
 		elif deviceId == DEVICE_BATTERY_BOARD:

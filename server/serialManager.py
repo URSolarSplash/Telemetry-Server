@@ -126,6 +126,9 @@ class SerialManager:
 				if type(device) is RadioDevice:
 					statistics.stats["hasRadio"] = False
 					self.cache.setRadioDevice(None)
+				if type(device) is StatelessTelemetryNodeDevice:
+					self.cache.set("throttleEnabled", 0)
+					self.cache.set("throttle", 0)
 
 	def pollDevices(self):
 		if time.time() - self.lastPoll < config.pollRate:
