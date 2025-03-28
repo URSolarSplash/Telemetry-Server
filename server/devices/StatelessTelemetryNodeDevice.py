@@ -46,12 +46,12 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 
 		if deviceId == DEVICE_ALLTRAX:
 			self.cache.set("boatConfig", 1)
-			self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
-			self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
-			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
-			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
-			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
-			self.cache.set("alltraxFault",packet[10])
+			# self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
+			# self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
+			# self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
+			# self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
+			# self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
+			# self.cache.set("alltraxFault",packet[10])
 		elif deviceId == DEVICE_BATTERY_BOARD:
 			pass
 		elif deviceId == DEVICE_MOTOR_BOARD:
@@ -123,6 +123,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			packet[1] = (throttle & 0xFF)
 			packet[2] = (throttle & 0xFF00) >> 8
 			packet[3] = int(self.cache.getNumerical('throttleEnabled',0))
+			print("writing", packet)
 		elif deviceId == DEVICE_VESC:
 			return
 		elif deviceId == DEVICE_BATTERY_BOARD:
@@ -143,7 +144,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 
 		# LZ: add a timeout here so this doesn't throttle the whole server
 		try:
-			self.port.write_timeout = 0.1  # Set a reasonable timeout
+			# self.port.write_timeout = 0.1  # Set a reasonable timeout
 			self.port.write(bytearray(packet))
 		except serial.SerialTimeoutException:
 			print("Write timed out")
