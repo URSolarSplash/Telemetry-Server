@@ -64,13 +64,15 @@ alarmThresholds = {
 # Blacklist for serial ports
 portBlacklist = [
     "/dev/cu.Bluetooth-Incoming-Port",
+    "/dev/cu.mifoO5Gen2Touch",
+	"/dev/cu.OontZAngle3XLIDF53",
     "/dev/ttyAMA0",
     "/dev/cu.JBLCharge3-SPPDev-1",
     "/dev/cu.BIGJAMBOXbyJawbone-SPPD",
     "/dev/cu.Bluetooth-Incoming-Port",
     "/dev/cu.BoseSoundSport-SPPDev",
-		"/dev/cu.BoseSoundSport-SPPDev-1",
-		"/dev/cu.BoseSoundSport-SPPDev-2"
+    "/dev/cu.BoseSoundSport-SPPDev-1",
+    "/dev/cu.BoseSoundSport-SPPDev-2",
 ]
 
 # Database path
@@ -82,7 +84,7 @@ dbFile = "test1.db"
 dbTablePrefix = "dataSession"
 
 # Whether to erase the database on start
-dbEraseOnStart = False
+dbEraseOnStart = True
 
 # Debug: Ignore all devices, don't connect to anything
 ignoreDevices = False
@@ -91,7 +93,7 @@ ignoreDevices = False
 pollRate = 0
 
 # Interval at which devices are scanned
-scanRate = 1.1 # offset so scan doesn't always happen at same time as database saving
+scanRate = 1.1  # offset so scan doesn't always happen at same time as database saving
 
 # Interval at which data is saved to database
 saveRate = 1
@@ -108,7 +110,7 @@ dashboardHttpPort = 5001
 # Whether to log http requests
 httpLogging = False
 
-#--- Control Algorithms Configuration ---
+# --- Control Algorithms Configuration ---
 # Control algorithms can set telemetry data points based on other data points.
 # For example, this can be used to drive the autopilot system in endurance.
 # Will be automatically disabled if the server is "slave",eg, receiving radio telemetry.

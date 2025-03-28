@@ -1,10 +1,5 @@
-import traceback
 import time
 import serial.tools.list_ports
-import sys
-import atexit
-import platform
-import re
 import server.config as config
 from server.devices.StatelessTelemetryNodeDevice import *
 from server.devices.RadioDevice import *
@@ -124,7 +119,7 @@ class SerialManager:
 		# This is identified based on if the serial device is closed
 		# or if the device did not show up on the serial scan
 		for device in self.devices:
-			if (not (device.portName in portNames)) or (not device.isOpen()):
+			if device.portName not in portNames or not device.isOpen():
 				if (device.isOpen()):
 					device.close()
 				self.devices.remove(device)

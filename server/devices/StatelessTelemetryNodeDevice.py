@@ -45,13 +45,13 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 		packetChecksum = packet[15]
 
 		if deviceId == DEVICE_ALLTRAX:
-			#self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
-			#self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
-			#self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
-			#self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
-			#self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
-			#self.cache.set("alltraxFault",packet[10])
-			pass
+			self.cache.set("boatConfig", 1)
+			self.cache.set("controllerTemp",(((packet[2] << 8 | packet[1])-559)*(1/2.048)))
+			self.cache.set("controllerInVoltage",((packet[4] << 8 | packet[3])*0.1025))
+			self.cache.set("controllerOutCurrent",(packet[6] << 8 | packet[5]))
+			self.cache.set("controllerInCurrent",(packet[8] << 8 | packet[7]))
+			self.cache.set("controllerDutyCycle",(packet[9]/255.0)*100.0)
+			self.cache.set("alltraxFault",packet[10])
 		elif deviceId == DEVICE_BATTERY_BOARD:
 			pass
 		elif deviceId == DEVICE_MOTOR_BOARD:
@@ -59,8 +59,7 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			motorRpm = (packet[8] << 24 | packet[7] << 16 | packet[6] << 8 | packet[5])
 			propRpm = (packet[12] << 24 | packet[11] << 16 | packet[10] << 8 | packet[9])
 			if (self.cache.getNumerical("boatConfig",0) == 1):
-				if(motorTemp == motorTemp):
-					self.cache.set("motorTemp",motorTemp)
+				self.cache.set("motorTemp",motorTemp)
 			self.cache.set("motorRpm",motorRpm)
 			self.cache.set("propRpm",propRpm)
 		elif deviceId == DEVICE_GPS_IMU:
@@ -94,11 +93,11 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 			throttleValue = packet[2] << 8 | packet[1]
 			throttleEnabled = packet[3]
 			throttleMode = packet[4]
-			boatConfig = packet[5]
+			# boat config is now determined by having either VESC or Alltrax attached
+			# boatConfig = packet[5]
 			self.cache.set("throttleInput",throttleValue)
 			self.cache.set("throttleEnabled",throttleEnabled)
 			self.cache.set("throttleMode",throttleMode)
-			self.cache.set("boatConfig",boatConfig)
 		elif deviceId == DEVICE_SOLAR:
 			outCurrent_1 = struct.unpack(">f",bytes([packet[4],packet[3],packet[2],packet[1]]))[0]
 			outCurrent_2 = struct.unpack(">f",bytes([packet[8],packet[7],packet[6],packet[5]]))[0]
@@ -141,7 +140,17 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 
 		# Generate checksum at the end of the packet, and write the packet to the serial stream.
 		packet[15] = self.encodeChecksum(packet)
-		self.port.write(bytearray(packet))
+
+		# LZ: add a timeout here so this doesn't throttle the whole server
+		try:
+			self.port.write_timeout = 0.1  # Set a reasonable timeout
+			self.port.write(bytearray(packet))
+		except serial.SerialTimeoutException:
+			print("Write timed out")
+			# Handle timeout appropriately
+		except serial.SerialException as e:
+			print(f"Serial error: {e}")
+			# Handle device errors
 
 	# Update function - Handles reading data, parsing, response packets
 	def update(self):
@@ -193,5 +202,5 @@ class StatelessTelemetryNodeDevice(GenericSerialDevice):
 		return (sum % 256)
 
 # Hex char to byte string
-def byteChar(char):
+def byteChar(char):#
 	return bytes(bytearray((char,)))

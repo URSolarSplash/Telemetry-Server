@@ -69,7 +69,8 @@ class VictronDevice(GenericSerialDevice):
 			return
 		dataBytes = wrap(rawLine[2:], 2)
 		dataId = int("0x"+dataBytes[1]+dataBytes[0],16)
-		#print("0x{0:04X}".format(dataId))
+		# print("0x{0:04X}".format(dataId))
+		# print(dataBytes)
 		# 8 bit: dataValue = int("0x"+dataBytes[3],16)
 		# 16 bit: dataValue = int("0x"+dataBytes[4]+dataBytes[3],16)
 		# 32 bit: dataValue = int("0x"+dataBytes[6]+dataBytes[5]+dataBytes[4]+dataBytes[3],16)
@@ -93,7 +94,7 @@ class VictronDevice(GenericSerialDevice):
 			self.cache.set("batteryConsumedAh",self.statusConsumedAh)
 		elif dataId == 0x0FFF:
 			dataValue = int("0x"+dataBytes[4]+dataBytes[3],16) #unsigned
-			self.statusStateOfCharge=dataValue / 100
+			self.statusStateOfCharge=dataValue / (2 ** 16) * 100
 			self.cache.set("batteryStateOfCharge",self.statusStateOfCharge)
 		elif dataId == 0x0FFE:
 			dataValue = int("0x"+dataBytes[4]+dataBytes[3],16) #unsigned
