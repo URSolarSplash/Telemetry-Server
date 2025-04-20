@@ -155,10 +155,10 @@ def liveStats():
 def flaskThread():
 	#app.run(host='0.0.0.0',threaded=True, use_reloader=False)
 	if config.httpLogging:
-		http_server = WSGIServer(listener=('0.0.0.0', config.httpPort), application=app)
+		http_server = WSGIServer(listener=('127.0.0.1', config.httpPort), application=app)
 		http_server.serve_forever()
 	else:
-		http_server = WSGIServer(listener=('0.0.0.0', config.httpPort), application=app, log=None,error_log=None)
+		http_server = WSGIServer(listener=('127.0.0.1', config.httpPort), application=app, log=None,error_log=None)
 		http_server.serve_forever()
 
 class HTTPServerManager:

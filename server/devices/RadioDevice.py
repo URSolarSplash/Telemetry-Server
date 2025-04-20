@@ -49,10 +49,8 @@ class RadioDevice(GenericSerialDevice):
         data = packet[2:6]
         dataValue = struct.unpack(">f", bytearray(data))[0]
         dataKey = self.cache.indexToKey(dataId)
-        if dataValue != dataValue:
-            dataValue = None
         #print("From Master: {0} = {1}".format(dataKey,dataValue))
-        if not dataValue == None:
+        if dataValue is not None:
             self.cache.setNoRadio(dataKey,dataValue)
     def write(self,dataName, dataValue):
         try:
@@ -65,7 +63,7 @@ class RadioDevice(GenericSerialDevice):
             packet = bytearray(6)
             packet[0] = 0xF0
             packet[1] = self.cache.keyToIndex(dataName)
-            if not dataValue is None:
+            if dataValue is not None:
                 packet[2:6] = bytearray(struct.pack(">f", dataValue))
             else:
                 # Use NaN to represent None for the data point.

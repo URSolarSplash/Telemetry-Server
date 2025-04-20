@@ -17,9 +17,10 @@ class VescDevice(GenericSerialDevice):
                 if self.port.in_waiting >= 71:
                     # Check for new vesc message in the buffer
                     (vescMessage, consumed) = pyvesc.decode(self.port.read(70))
+                    # print(vars(vescMessage))
                     if vescMessage:
-                        if (self.cache.getNumerical("boatConfig",0) == 0):
-                            self.cache.set("motorTemp",float(vescMessage.temp_motor_filtered))
+                        self.cache.set("boatConfig", 0)
+                        self.cache.set("motorTemp",float(vescMessage.temp_motor_filtered))
                         self.cache.set("controllerTemp",float(vescMessage.temp_fet_filtered))
                         self.cache.set("controllerInCurrent",float(vescMessage.avg_input_current))
                         self.cache.set("controllerOutCurrent",float(vescMessage.avg_motor_current))
@@ -38,6 +39,7 @@ class VescDevice(GenericSerialDevice):
         if (self.cache.getNumerical('boatConfig',0) == 0):
             if (self.cache.getNumerical('throttleMode',0) == 0):
                 throttle = ((self.cache.getNumerical('throttle',0)/255.0) * 100.0 * 1000.0)
+                print(throttle)
                 throttleMessage = pyvesc.SetDutyCycle(int(throttle))
                 self.port.write(pyvesc.encode(throttleMessage))
             else:

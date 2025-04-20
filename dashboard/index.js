@@ -3,10 +3,12 @@
 // Handles all page mechanics.
 //////////////////////////////////////////////////////////
 
+const fps = 20;
+
 // Create an instance of the Telemetry system connected to the local machine
 var Telemetry = new TelemetryServer("localhost",5000)
 
-var chartThrottle,chartRpm,chartSpeed,chartTrim;
+var chartThrottle,chartCurrent,chartRpm,chartSpeed,chartTrim;
 
 // On page initialization
 $(function(){
@@ -22,6 +24,7 @@ $(function(){
         ticks: 10,
         tickSize:30,
         tickOffset:10,
+        fps: fps,
         format: function(v) { return (v).toFixed(2) + '%'; }
     });
     chartCurrent = $('#gaugeChartCurrent').epoch({
@@ -31,6 +34,7 @@ $(function(){
         ticks: 10,
         tickSize:30,
         tickOffset:10,
+        fps: fps,
         format: function(v) { return (v).toFixed(1) + ' A'; }
     });
     chartRpm = $('#gaugeChartRpm').epoch({
@@ -40,6 +44,7 @@ $(function(){
         ticks: 10,
         tickSize:30,
         tickOffset:10,
+        fps: fps,
         format: function(v) { return (v).toFixed(0) + ' rpm'; }
     });
     chartSpeed = $('#gaugeChartSpeed').epoch({
@@ -49,6 +54,7 @@ $(function(){
         ticks: 10,
         tickSize:30,
         tickOffset:10,
+        fps: fps,
         format: function(v) { return (v).toFixed(2) + ' mph'; }
     });
     chartTrim = $('#gaugeChartTrim').epoch({
@@ -58,6 +64,7 @@ $(function(){
         ticks: 10,
         tickSize:30,
         tickOffset:10,
+        fps: fps,
         format: function(v) { return (v).toFixed(2) + ' deg'; }
     });
 });
