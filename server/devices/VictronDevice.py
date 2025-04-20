@@ -91,10 +91,14 @@ class VictronDevice(GenericSerialDevice):
 		elif dataId == 0xEEFF:
 			dataValue = twos_complement(dataBytes[6]+dataBytes[5]+dataBytes[4]+dataBytes[3],32)
 			self.statusConsumedAh=dataValue / 10
+			print(dataBytes)
+			print(self.statusConsumedAh)
 			self.cache.set("batteryConsumedAh",self.statusConsumedAh)
 		elif dataId == 0x0FFF:
 			dataValue = int("0x"+dataBytes[4]+dataBytes[3],16) #unsigned
 			self.statusStateOfCharge=dataValue / (2 ** 16) * 100
+			print(dataBytes)
+			print(self.statusStateOfCharge)
 			self.cache.set("batteryStateOfCharge",self.statusStateOfCharge)
 		elif dataId == 0x0FFE:
 			dataValue = int("0x"+dataBytes[4]+dataBytes[3],16) #unsigned

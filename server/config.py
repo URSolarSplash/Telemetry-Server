@@ -124,4 +124,4 @@ writeFromSlave = True
 controlAlgorithmUpdateRate = 0.01
 
 # Control algorithm which saves some mock data for testing
-controlAlgorithmMockData = False
+controlAlgorithmMockData = True

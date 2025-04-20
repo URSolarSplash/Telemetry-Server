@@ -4,7 +4,7 @@ import server.config as config
 from server.devices.StatelessTelemetryNodeDevice import *
 from server.devices.RadioDevice import *
 from server.devices.TelemetryNodeDevice import *
-from server.devices.VictronDevice import *
+from server.devices.VictronDevice2 import *
 from server.devices.VescDevice import *
 import server.statistics as statistics
 
