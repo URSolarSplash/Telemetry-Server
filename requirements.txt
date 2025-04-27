@@ -13,7 +13,7 @@ pythoncrc==1.21
 pyvesc==1.0.5
 regex==2023.12.25
 simple-pid==2.0.0
-Werkzeug==3.0.1
+Werkzeug==3.0.6
 zipp==3.17.0
 zope.event==5.0
 zope.interface==6.1
