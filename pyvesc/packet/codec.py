@@ -1,7 +1,6 @@
 from pyvesc.packet.structure import *
 from pyvesc.packet.exceptions import *
-from PyCRC.CRCCCITT import CRCCCITT
-
+from pycrc.CRCCCITT import CRCCCITT
 
 class UnpackerBase(object):
     """
@@ -152,10 +151,10 @@ class UnpackerBase(object):
                 header = None
                 return payload, consumed
             except CorruptPacket as corrupt_packet:
-                if errors is 'ignore':
+                if errors == 'ignore':
                     # find the next possible start byte in the buffer
                     return Stateless._recovery_recurse(buffer, header, errors, True)
-                elif errors is 'strict':
+                elif errors == 'strict':
                     raise corrupt_packet
 
     @staticmethod
