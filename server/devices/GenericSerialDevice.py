@@ -1,10 +1,10 @@
-import regex
+# import regex
 import serial
-import ast
-from .. import statistics
+# import ast
+# from .. import statistics
 import time
-from .. import pynmea2
-import traceback
+# import pynmea2
+# import traceback
 
 class GenericSerialDevice(object):
 	def __init__(self, cache, portName, baudRate):
