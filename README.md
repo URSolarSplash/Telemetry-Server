@@ -75,12 +75,18 @@ sudo qemu-system-arm -kernel ./kernel-qemu-4.19.50-buster \
 ```
 
 
-## In the works
+## Go port
 
-- Rewrite telemetry server in Go
-  - excellent cross platform support
-  - small binary size
-  - strong standard library
-  - built in concurrency support
-  - high performance
-  - the fact that the server can be reduced down to a single binary is advantageous for deploying it.
+The rewrite of the telemetry server in Go is available in the [`go/`](go/)
+directory. It is a full port of the Python server (serial device drivers,
+data cache, SQLite logging, HTTP API, dashboard server, radio link, control
+algorithms, and sentry) that compiles to a single static binary and has a
+hardware-free test suite — see [`go/README.md`](go/README.md).
+
+Motivation:
+- excellent cross platform support
+- small binary size
+- strong standard library
+- built in concurrency support
+- high performance
+- the fact that the server can be reduced down to a single binary is advantageous for deploying it.

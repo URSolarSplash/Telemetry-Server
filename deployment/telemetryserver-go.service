@@ -1,0 +1,17 @@
+# Systemd unit for the Go telemetry server (static binary).
+# Copy the built binary to /usr/local/bin/telemetry-server and the repository
+# (for the dashboard files) to /home/pi/Telemetry-Server, then:
+#   sudo systemctl enable --now telemetryserver-go
+[Unit]
+Description=Telemetry Server (Go)
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/Telemetry-Server
+ExecStart=/usr/local/bin/telemetry-server
+Restart=always
+RestartSec=2
+User=pi
+
+[Install]
+WantedBy=multi-user.target
